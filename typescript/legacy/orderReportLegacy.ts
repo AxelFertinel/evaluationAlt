@@ -181,6 +181,7 @@ function run(): string {
       };
     }
 
+    
     totalsByCustomer[cid].subtotal += lineTotal;
     totalsByCustomer[cid].weight += (prod.weight || 1.0) * o.qty;
     totalsByCustomer[cid].items.push(o);

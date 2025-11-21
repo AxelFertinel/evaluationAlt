@@ -1,4 +1,9 @@
-import { parsingData, loyaltyPoints, totalsByCustomer } from "../function";
+import {
+  parsingData,
+  loyaltyPoints,
+  totalsByCustomer,
+  promoCodeDiscount,
+} from "../function";
 
 describe("parsingData", () => {
   it("parses data file into an array of objects", () => {
@@ -66,5 +71,24 @@ describe("totalsByCustomer", () => {
     const totals = totalsByCustomer(orders);
     expect(totals["C002"]).toBeCloseTo(54, 4);
     expect(totals["C003"]).toBeCloseTo(26.97, 4);
+  });
+});
+
+describe("promoCodeDiscount", () => {
+  it("calculates promo code discount correctly", () => {
+    const orders = [
+      {
+        id: "O005",
+        customer_id: "C002",
+        product_id: "P007",
+        qty: "1",
+        unit_price: "10",
+        date: "2025-01-16",
+        promo_code: "BULK15",
+        time: "09:15",
+      },
+    ] as any[];
+    const discount = promoCodeDiscount(orders);
+    expect(discount).toBeCloseTo(1.5, 4);
   });
 });
