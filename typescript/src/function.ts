@@ -35,3 +35,15 @@ export function loyaltyPoints(orders: Order[]): number {
   }
   return loyaltyPoints;
 }
+
+export function totalsByCustomer(orders: Order[]): Record<string, number> {
+  const totals: Record<string, number> = {};
+  for (const order of orders) {
+    if (!totals[order.customer_id]) {
+      totals[order.customer_id] = 0;
+    }
+    totals[order.customer_id] += order.qty * order.unit_price;
+  }
+  return totals;
+}
+
