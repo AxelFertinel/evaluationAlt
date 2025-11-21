@@ -1,3 +1,4 @@
+// typage du projet
 export type CustomerLevel = "BASIC" | "PREMIUM";
 
 export interface ShippingZone {
