@@ -39,7 +39,7 @@ describe("totalsByCustomer", () => {
         qty: "3",
         unit_price: "10",
         date: "2025-01-16",
-        promo_code: "",
+        promo_code: "BULK15",
         time: "09:15",
       },
       {
@@ -49,7 +49,7 @@ describe("totalsByCustomer", () => {
         qty: "3",
         unit_price: "8",
         date: "2025-01-16",
-        promo_code: "",
+        promo_code: "WEEKEND5",
         time: "09:15",
       },
       {
@@ -59,7 +59,7 @@ describe("totalsByCustomer", () => {
         qty: "3",
         unit_price: "8.99",
         date: "2025-01-16",
-        promo_code: "",
+        promo_code: "PREMIUM10",
         time: "09:15",
       },
     ] as any[];

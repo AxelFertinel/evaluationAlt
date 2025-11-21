@@ -1,6 +1,6 @@
 import * as path from "path";
 import * as fs from "fs";
-import { Order } from "./type";
+import { Order, Promotion } from "./type";
 import { LOYALTY_RATIO } from "./constants";
 
 export function parsingData(file: string): any[] {
@@ -8,6 +8,7 @@ export function parsingData(file: string): any[] {
   const data = path.join(base, file);
   const csv = fs.readFileSync(data, "utf-8");
   const lines = csv.split("\n").filter((l) => l.trim());
+
   if (lines.length === 0) return [];
 
   const headers = lines[0]
@@ -18,9 +19,20 @@ export function parsingData(file: string): any[] {
   const rows = lines.slice(1).map((line) => {
     const cleaned = line.replace(/\r$/, "");
     const parts = cleaned.split(",").map((p) => p.trim());
-    const obj: Record<string, string> = {};
+    const obj: Record<string, any> = {}; 
+
     for (let i = 0; i < headers.length; i++) {
-      obj[headers[i]] = parts[i] ?? "";
+      const value = parts[i] ?? "";
+
+      if (value === "true") {
+        obj[headers[i]] = true;
+      } else if (value === "false") {
+        obj[headers[i]] = false;
+      } else if (!isNaN(Number(value)) && value !== "") {
+        obj[headers[i]] = Number(value);
+      } else {
+        obj[headers[i]] = value;
+      }
     }
     return obj;
   });
@@ -47,3 +59,28 @@ export function totalsByCustomer(orders: Order[]): Record<string, number> {
   return totals;
 }
 
+export function promoCodeDiscount(orders: Order[]): number {
+  const promotionCode = parsingData("promotions.csv");
+  const totals = totalsByCustomer(orders); // Calcul une seule fois
+  let totalDiscount = 0;
+
+  for (const order of orders) {
+    if (!order.promo_code) continue;
+
+    const promo = promotionCode.find(
+      (p) => p.active && p.code === order.promo_code
+    );
+
+    if (!promo) continue;
+
+    const orderTotal = order.qty * order.unit_price;
+
+    if (promo.type === "PERCENTAGE") {
+      totalDiscount += (orderTotal * promo.value) / 100;
+    } else if (promo.type === "FIXED") {
+      totalDiscount += promo.value;
+    }
+  }
+
+  return totalDiscount;
+}
