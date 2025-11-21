@@ -12,19 +12,19 @@ export type Currency = "EUR" | "USD" | "GBP";
 export interface Customer {
   id: string;
   name: string;
-  level: CustomerLevel;
-  shipping_zone: ShippingZone;
-  currency: Currency;
+  level: "BASIC" | "PREMIUM";
+  shipping_zone: "ZONE1" | "ZONE2" | "ZONE3" | "ZONE4";
+  currency: "EUR" | "USD" | "GBP";
 }
 
 export interface Order {
   id: string;
-  customer_id: Customer;
-  product_id: Product;
+  customer_id: string;
+  product_id: string;
   qty: number;
   unit_price: number;
   date: string;
-  promo_code: Promotion | null;
+  promo_code: "PERCENTAGE" | "FIXED" | "";
   time: string;
 }
 
