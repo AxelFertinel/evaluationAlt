@@ -18,12 +18,10 @@ import {
   MAX_DISCOUNT,
 } from "./constants";
 
-import { parsingData, getDataFile } from "./function";
+import { parsingData } from "./function";
 
-const customers: Customer[] = parsingData(getDataFile("customers.csv"));
-const orders: Order[] = parsingData(getDataFile("orders.csv"));
-const products: Product[] = parsingData(getDataFile("products.csv"));
-const shippingZones: ShippingZone[] = parsingData(
-  getDataFile("shipping_zones.csv")
-);
-const promotions: Promotion[] = parsingData(getDataFile("promotions.csv"));
+const customers: Customer[] = parsingData("customers.csv");
+const orders: Order[] = parsingData("orders.csv");
+const products: Product[] = parsingData("products.csv");
+const shippingZones: ShippingZone[] = parsingData("shipping_zones.csv");
+const promotions: Promotion[] = parsingData("promotions.csv");

@@ -1,12 +1,9 @@
 import * as path from "path";
 import * as fs from "fs";
 
-export function getDataFile(file: string): string {
+export function parsingData(file: string): any[] {
   const base = "../typescript/legacy/data/";
-  return path.join(base, file);
-}
-
-export function parsingData(data: string): any[] {
+  const data = path.join(base, file);
   const csv = fs.readFileSync(data, "utf-8");
   const lines = csv.split("\n").filter((l) => l.trim());
   if (lines.length === 0) return [];
