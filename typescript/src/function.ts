@@ -1,5 +1,7 @@
 import * as path from "path";
 import * as fs from "fs";
+import { Order } from "./type";
+import { LOYALTY_RATIO } from "./constants";
 
 export function parsingData(file: string): any[] {
   const base = "../typescript/legacy/data/";
@@ -24,4 +26,11 @@ export function parsingData(file: string): any[] {
   });
 
   return rows;
+}
+
+export function loyaltyPoints(orders: Order[]): number {
+  return orders.reduce(
+    (total, order) => total + Math.floor(order.unit_price * order.qty * LOYALTY_RATIO),
+    0
+  );
 }

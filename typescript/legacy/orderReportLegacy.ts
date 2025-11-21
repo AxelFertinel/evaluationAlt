@@ -99,6 +99,7 @@ function run(): string {
   const orders: Order[] = [];
   const ordData = fs.readFileSync(ordPath, "utf-8");
   const ordLines = ordData.split("\n").filter((l) => l.trim());
+  
   for (let i = 1; i < ordLines.length; i++) {
     const parts = ordLines[i].split(",");
     try {
