@@ -28,9 +28,12 @@ export function parsingData(file: string): any[] {
   return rows;
 }
 
-export function loyaltyPoints(orders: Order[]): number {
-  return orders.reduce(
-    (total, order) => total + Math.floor(order.unit_price * order.qty * LOYALTY_RATIO),
-    0
-  );
-}
+// export function loyaltyPoints(orders: Order[]): number {
+//   console.log("test:", orders);
+
+//   return orders.reduce(
+//     (total, order) =>
+//       total + Math.floor(order.unit_price * order.qty * LOYALTY_RATIO),
+//     0
+//   );
+// }

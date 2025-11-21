@@ -25,3 +25,5 @@ const orders: Order[] = parsingData("orders.csv");
 const products: Product[] = parsingData("products.csv");
 const shippingZones: ShippingZone[] = parsingData("shipping_zones.csv");
 const promotions: Promotion[] = parsingData("promotions.csv");
+
+
