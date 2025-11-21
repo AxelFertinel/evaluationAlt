@@ -29,7 +29,6 @@ describe("loyaltyPoints", () => {
       },
     ] as any[];
     const points = loyaltyPoints(orders);
-    console.log(points);
     expect(points).toBeCloseTo(0.2697, 4);
   });
 });
@@ -76,10 +75,10 @@ describe("totalsByCustomer", () => {
 
 describe("promoCodeDiscount", () => {
   it("calculates promo code discount correctly", () => {
-    const orders = [
+    const order = [
       {
-        id: "O005",
-        customer_id: "C002",
+        id: "O006",
+        customer_id: "C003",
         product_id: "P007",
         qty: "1",
         unit_price: "10",
@@ -88,7 +87,8 @@ describe("promoCodeDiscount", () => {
         time: "09:15",
       },
     ] as any[];
-    const discount = promoCodeDiscount(orders);
-    expect(discount).toBeCloseTo(1.5, 4);
+
+    const discount = promoCodeDiscount(order);
+    expect(discount).toBeCloseTo(0.15, 4);
   });
 });

@@ -19,7 +19,7 @@ export function parsingData(file: string): any[] {
   const rows = lines.slice(1).map((line) => {
     const cleaned = line.replace(/\r$/, "");
     const parts = cleaned.split(",").map((p) => p.trim());
-    const obj: Record<string, any> = {}; 
+    const obj: Record<string, any> = {};
 
     for (let i = 0; i < headers.length; i++) {
       const value = parts[i] ?? "";
@@ -61,8 +61,7 @@ export function totalsByCustomer(orders: Order[]): Record<string, number> {
 
 export function promoCodeDiscount(orders: Order[]): number {
   const promotionCode = parsingData("promotions.csv");
-  const totals = totalsByCustomer(orders); // Calcul une seule fois
-  let totalDiscount = 0;
+  let discount = 0;
 
   for (const order of orders) {
     if (!order.promo_code) continue;
@@ -73,14 +72,12 @@ export function promoCodeDiscount(orders: Order[]): number {
 
     if (!promo) continue;
 
-    const orderTotal = order.qty * order.unit_price;
-
     if (promo.type === "PERCENTAGE") {
-      totalDiscount += (orderTotal * promo.value) / 100;
+      discount = parseFloat(promo.value) / 100;
     } else if (promo.type === "FIXED") {
-      totalDiscount += promo.value;
+      discount = promo.value;
     }
   }
 
-  return totalDiscount;
+  return discount;
 }
