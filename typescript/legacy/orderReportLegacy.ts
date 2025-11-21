@@ -19,6 +19,7 @@ type Promotion = any;
 
 // Fonction principale qui fait TOUT
 function run(): string {
+    
     const base = __dirname;
     const custPath = path.join(base, 'data', 'customers.csv');
     const ordPath = path.join(base, 'data', 'orders.csv');
