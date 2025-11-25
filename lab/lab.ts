@@ -92,26 +92,18 @@ class SamplesInspector {
   }
 }
 
-class TechniciansInspector {
-  constructor(private technician: TypeTechnician, private sample: TypeSample) {}
-  public isValidSpeciality(): boolean {
-    if (this.technician.speciality != this.sample.type) {
-      return false;
-    }
-    return true;
-  }
+class SamplesOrderPriority {
+  constructor(private data: LabData) {}
+  public sampleOrderByPriority(): TypeSample[] {
+    return this.data.samples.sort((a, b) => {
+      const sampleA = new SamplesInspector(a);
+      const sampleB = new SamplesInspector(b);
 
-  public isAvailable(atTime: string): boolean {
-    return (
-      atTime >= this.technician.startTime && atTime <= this.technician.endTime
-    );
-  }
-}
+      const prioDiff = sampleA.priority() - sampleB.priority();
+      if (prioDiff !== 0) return prioDiff;
 
-class checkEquipmentAvailability {
-  constructor(private equipment: TypeEquipment) {}
-  public isAvailable(): boolean {
-    return this.equipment.available;
+      return sampleA.arrivalMinutes() - sampleB.arrivalMinutes();
+    });
   }
 }
 
@@ -129,21 +121,6 @@ class calculateEndTime {
       .padStart(2, "0")}`;
   }
 }
-class SamplesOrderPriority {
-  constructor(private data: LabData) {}
-  public sampleOrderByPriority(): TypeSample[] {
-    return this.data.samples.sort((a, b) => {
-      const sampleA = new SamplesInspector(a);
-      const sampleB = new SamplesInspector(b);
-
-      const prioDiff = sampleA.priority() - sampleB.priority();
-      if (prioDiff !== 0) return prioDiff;
-
-      return sampleA.arrivalMinutes() - sampleB.arrivalMinutes();
-    });
-    
-  }
-}
 
 class planifyLab {
   constructor(private data: LabData) {}
@@ -152,11 +129,7 @@ class planifyLab {
     const samples = new SamplesOrderPriority(this.data).sampleOrderByPriority();
 
     const technician = this.data.technicians[0];
-
     const equipment = this.data.equipment[0];
-    if (!equipment?.available) {
-      throw new Error("Equipment not available");
-    }
 
     const schedule = {
       schedule: samples.map((sample) => {
