@@ -106,6 +106,14 @@ class calculateEndTime {
   }
 }
 
+// class calculateEfficiency {
+//   constructor(private analysisTime: number, private availableTime: number) {}
+//   public getEfficiency(): number {
+//     if (this.availableTime === 0) return 0;
+//     return (this.analysisTime / this.availableTime) * 100;
+//   }
+// }
+
 class planifyLab {
   constructor(private data: LabData) {}
   public generateSchedule(): any {
@@ -129,7 +137,7 @@ class planifyLab {
       ],
       metrics: {
         totalTime: sample?.analysisTime,
-        efficiency: 100.0,
+        efficiency: 100,
         conflicts: 0,
       },
     };
