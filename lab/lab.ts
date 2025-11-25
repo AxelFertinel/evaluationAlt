@@ -38,7 +38,7 @@ const dataSimple: LabData = {
 
 type Priority = "STAT" | "URGENT" | "ROUTINE";
 type AnalyseType = "BLOOD" | "URINE" | "TISSUE";
-type Technicians = "BLOOD" | "URINE" | "TISSUE" | "GENERAL";
+type TechnicianSpeciality = "BLOOD" | "URINE" | "TISSUE" | "GENERAL";
 
 interface TypeSample {
   id: string;
@@ -52,7 +52,7 @@ interface TypeSample {
 interface TypeTechnician {
   id: string;
   name: string;
-  speciality: Technicians;
+  speciality: TechnicianSpeciality;
   startTime: string;
   endTime: string;
 }
@@ -77,6 +77,12 @@ interface ScheduleItem {
   startTime: string;
   endTime: string;
   priority: Priority;
+}
+
+interface ScheduleMetrics {
+  totalTime: string;
+  efficiency: number;
+  conflicts: number;
 }
 class SamplesInspector {
   constructor(private sample: TypeSample) {}
