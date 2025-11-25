@@ -13,7 +13,7 @@ const dataSimple: LabData = {
       type: "BLOOD",
       priority: "STAT",
       analysisTime: 30,
-      arrivalTime: "9:30",
+      arrivalTime: "09:30",
       patientId: "P002",
     },
   ],
@@ -121,6 +121,13 @@ class calculateEndTime {
       .padStart(2, "0")}`;
   }
 }
+
+// check si sample.type est compatible avec technician.speciality et equipement.type
+// check si technician.startTime et endTime sont compatible avec sampale.arrivaleTime
+// check si equipement.available
+// un sample commence uniquement après que le précédent est terminé
+// faire le calcul des metrics
+// 
 
 class planifyLab {
   constructor(private data: LabData) {}
