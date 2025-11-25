@@ -129,10 +129,8 @@ class calculateEndTime {
       .padStart(2, "0")}`;
   }
 }
-
-class planifyLab {
+class SamplesOrderPriority {
   constructor(private data: LabData) {}
-
   public sampleOrderByPriority(): TypeSample[] {
     return this.data.samples.sort((a, b) => {
       const sampleA = new SamplesInspector(a);
@@ -144,9 +142,13 @@ class planifyLab {
       return sampleA.arrivalMinutes() - sampleB.arrivalMinutes();
     });
   }
+}
+
+class planifyLab {
+  constructor(private data: LabData) {}
 
   public generateSchedule(): any {
-    const samples = this.sampleOrderByPriority();
+    const samples = new SamplesOrderPriority(this.data).sampleOrderByPriority();
 
     const technician = this.data.technicians[0];
 
