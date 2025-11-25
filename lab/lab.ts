@@ -141,6 +141,7 @@ class SamplesOrderPriority {
 
       return sampleA.arrivalMinutes() - sampleB.arrivalMinutes();
     });
+    
   }
 }
 
