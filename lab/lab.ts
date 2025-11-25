@@ -36,14 +36,14 @@ const dataSimple: LabData = {
   ],
 };
 
-type priority = "STAT" | "URGENT" | "ROUTINE";
-type analyseType = "BLOOD" | "URINE" | "TISSUE";
-type technicians = "BLOOD" | "URINE" | "TISSUE" | "GENERAL";
+type Priority = "STAT" | "URGENT" | "ROUTINE";
+type AnalyseType = "BLOOD" | "URINE" | "TISSUE";
+type Technicians = "BLOOD" | "URINE" | "TISSUE" | "GENERAL";
 
 interface TypeSample {
   id: string;
-  type: analyseType;
-  priority: priority;
+  type: AnalyseType;
+  priority: Priority;
   analysisTime: number;
   arrivalTime: string;
   patientId: string;
@@ -52,7 +52,7 @@ interface TypeSample {
 interface TypeTechnician {
   id: string;
   name: string;
-  speciality: technicians;
+  speciality: Technicians;
   startTime: string;
   endTime: string;
 }
@@ -60,7 +60,7 @@ interface TypeTechnician {
 interface TypeEquipment {
   id: string;
   name: string;
-  type: analyseType;
+  type: AnalyseType;
   available: boolean;
 }
 
@@ -70,6 +70,14 @@ interface LabData {
   equipment: TypeEquipment[];
 }
 
+interface ScheduleItem {
+  sampleId: string;
+  technicianId: string;
+  equipmentId: string;
+  startTime: string;
+  endTime: string;
+  priority: Priority;
+}
 class SamplesInspector {
   constructor(private sample: TypeSample) {}
 
@@ -127,7 +135,6 @@ class calculateEndTime {
 // check si equipement.available
 // un sample commence uniquement après que le précédent est terminé
 // faire le calcul des metrics
-// 
 
 class planifyLab {
   constructor(private data: LabData) {}

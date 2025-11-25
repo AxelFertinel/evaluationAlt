@@ -419,6 +419,7 @@ class LabSchedulerFactory {
       data.technicians,
       new TechnicianMatcher()
     );
+    
     const equipmentFinder = new ResourceFinder(
       data.equipment,
       new EquipmentMatcher()
@@ -449,20 +450,4 @@ class LabSchedulerFactory {
 
 const scheduler = LabSchedulerFactory.create(dataSimple);
 const result = scheduler.generateSchedule(dataSimple.samples);
-
-console.log("\n📋 PLANNING LABORATOIRE\n");
-console.log("═══════════════════════════════════════════════════════");
-result.schedule.forEach((item, index) => {
-  console.log(
-    `\n${index + 1}. Échantillon ${item.sampleId} [${item.priority}]`
-  );
-  console.log(`   ⏰ ${item.startTime} → ${item.endTime}`);
-  console.log(`   👨‍🔬 Technicien: ${item.technicianId}`);
-  console.log(`   🔬 Équipement: ${item.equipmentId}`);
-});
-console.log("\n═══════════════════════════════════════════════════════");
-console.log(`\n📊 MÉTRIQUES:`);
-console.log(`   Durée totale: ${result.metrics.totalTime}`);
-console.log(`   Efficacité: ${result.metrics.efficiency}%`);
-console.log(`   Conflits: ${result.metrics.conflicts}`);
-console.log("\n");
+console.dir(result, { depth: null, colors: true });
