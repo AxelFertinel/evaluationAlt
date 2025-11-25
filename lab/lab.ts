@@ -13,15 +13,7 @@ const dataSimple: LabData = {
       type: "BLOOD",
       priority: "STAT",
       analysisTime: 30,
-      arrivalTime: "08:30",
-      patientId: "P002",
-    },
-    {
-      id: "S003",
-      type: "BLOOD",
-      priority: "STAT",
-      analysisTime: 30,
-      arrivalTime: "09:00",
+      arrivalTime: "9:30",
       patientId: "P002",
     },
   ],
@@ -37,8 +29,8 @@ const dataSimple: LabData = {
   equipment: [
     {
       id: "E001",
+      name: "Hematology Analyzer",
       type: "BLOOD",
-      name: "Analyseur Sang A",
       available: true,
     },
   ],
@@ -64,6 +56,7 @@ interface TypeTechnician {
   startTime: string;
   endTime: string;
 }
+
 interface TypeEquipment {
   id: string;
   name: string;
@@ -77,7 +70,7 @@ interface LabData {
   equipment: TypeEquipment[];
 }
 
-class checkSamples {
+class SamplesInspector {
   constructor(private sample: TypeSample) {}
 
   public priority(): number {
@@ -99,7 +92,7 @@ class checkSamples {
   }
 }
 
-class checkTechnicians {
+class TechniciansInspector {
   constructor(private technician: TypeTechnician, private sample: TypeSample) {}
   public isValidSpeciality(): boolean {
     if (this.technician.speciality != this.sample.type) {
@@ -142,8 +135,8 @@ class planifyLab {
 
   public sampleOrderByPriority(): TypeSample[] {
     return this.data.samples.sort((a, b) => {
-      const sampleA = new checkSamples(a);
-      const sampleB = new checkSamples(b);
+      const sampleA = new SamplesInspector(a);
+      const sampleB = new SamplesInspector(b);
 
       const prioDiff = sampleA.priority() - sampleB.priority();
       if (prioDiff !== 0) return prioDiff;
@@ -154,6 +147,7 @@ class planifyLab {
 
   public generateSchedule(): any {
     const samples = this.sampleOrderByPriority();
+
     const technician = this.data.technicians[0];
 
     const equipment = this.data.equipment[0];
@@ -162,31 +156,31 @@ class planifyLab {
     }
 
     const schedule = {
-      schedule: [
-        samples.map((sample) => {
-          const calcEndTime = new calculateEndTime(
-            sample.arrivalTime,
-            sample.analysisTime
-          );
-          return {
-            sampleId: sample?.id,
-            technicianId: technician?.id,
-            equipmentId: equipment?.id,
-            startTime: sample?.arrivalTime,
-            endTime: calcEndTime.getEndTime(),
-            priority: sample?.priority,
-          };
-        }),
-      ],
+      schedule: samples.map((sample) => {
+        const calcEndTime = new calculateEndTime(
+          sample.arrivalTime,
+          sample.analysisTime
+        );
+
+        return {
+          sampleId: sample?.id,
+          technicianId: technician?.id,
+          equipmentId: equipment?.id,
+          startTime: sample?.arrivalTime,
+          endTime: calcEndTime.getEndTime(),
+          priority: sample?.priority,
+        };
+      }),
       metrics: {
         totalTime: "xxx",
         efficiency: 100,
         conflicts: 0,
       },
     };
-    return schedule.schedule[0];
+
+    return schedule;
   }
 }
 
 const testLab = new planifyLab(dataSimple);
-console.log(testLab.generateSchedule());
+console.dir(testLab.generateSchedule(), { depth: null, colors: true });
