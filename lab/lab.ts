@@ -86,6 +86,20 @@ interface ScheduleMetrics {
   efficiency: number;
   conflicts: number;
 }
+interface ISampleSorter {
+  sort(samples: TypeSample[]): TypeSample[];
+}
+
+interface ITimeCalculator {
+  getEndTime(startTime: string, duration: number): string;
+  timeToMinutes(time: string): number;
+  minutesToTime(minutes: number): string;
+}
+
+interface IResourceFinder {
+  findTechnician(sampleType: AnalyseType): TypeTechnician | null;
+  findEquipment(sampleType: AnalyseType): TypeEquipment | null;
+}
 
 class SamplesOrderPriority implements ISampleSorter {
   sort(samples: TypeSample[]): TypeSample[] {
@@ -111,29 +125,13 @@ class SamplesOrderPriority implements ISampleSorter {
     return Number(hours) * 60 + Number(minutes);
   }
 }
-interface ISampleSorter {
-  sort(samples: TypeSample[]): TypeSample[];
-}
 
+// const testSampleSorter = new SamplesOrderPriority();
+// console.dir(testSampleSorter.sort(dataSimple.samples), {
+//   depth: null,
+//   colors: true,
+// });
 
-
-const testSampleSorter = new SamplesOrderPriority();
-console.dir(testSampleSorter.sort(dataSimple.samples), {
-  depth: null,
-  colors: true,
-});
-
-// Interface pour le calcul du temps
-interface ITimeCalculator {
-  getEndTime(startTime: string, duration: number): string;
-  timeToMinutes(time: string): number;
-  minutesToTime(minutes: number): string;
-}
-
-interface IResourceFinder {
-  findTechnician(sampleType: AnalyseType): TypeTechnician | null;
-  findEquipment(sampleType: AnalyseType): TypeEquipment | null;
-}
 
 class CalculateTime implements ITimeCalculator {
   getEndTime(startTime: string, duration: number): string {
