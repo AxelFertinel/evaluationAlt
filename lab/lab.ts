@@ -105,40 +105,53 @@ class SamplesInspector {
     return Number(hours) * 60 + Number(minutes);
   }
 }
+interface ISampleSorter {
+  sort(samples: TypeSample[]): TypeSample[];
+}
 
-class SamplesOrderPriority {
-  constructor(private data: LabData) {}
+class SamplesOrderPriority implements ISampleSorter {
+  constructor(timeTominute: CalculateTime = new CalculateTime()) {}
+  sort(samples: TypeSample[]): TypeSample[] {
+    return [...samples].sort((a, b) => {
+      const priorityOrder: Record<Priority, number> = {
+        STAT: 1,
+        URGENT: 2,
+        ROUTINE: 3,
+      };
 
-  public sampleOrderByPriority(): TypeSample[] {
-    return [...this.data.samples].sort((a, b) => {
-      const sampleA = new SamplesInspector(a);
-      const sampleB = new SamplesInspector(b);
-
-      // D'abord par priorité
-      const prioDiff = sampleA.priority() - sampleB.priority();
+      const prioDiff = priorityOrder[a.priority] - priorityOrder[b.priority];
       if (prioDiff !== 0) return prioDiff;
 
       // Si même priorité, par ordre d'arrivée
-      return sampleA.arrivalMinutes() - sampleB.arrivalMinutes();
+      return (
+        this.timeToMinutes(a.arrivalTime) - this.timeToMinutes(b.arrivalTime)
+      );
     });
   }
+
+  private timeToMinutes(time: string): number {
+    const [hours, minutes] = time.split(":").map(Number);
+    return Number(hours) * 60 + Number(minutes);
+  }
 }
+
+const testSampleSorter = new SamplesOrderPriority();
+console.dir(testSampleSorter.sort(dataSimple.samples), {
+  depth: null,
+  colors: true,
+});
+
 // Interface pour le calcul du temps
 interface ITimeCalculator {
   getEndTime(startTime: string, duration: number): string;
   timeToMinutes(time: string): number;
   minutesToTime(minutes: number): string;
 }
+
 interface IResourceFinder {
   findTechnician(sampleType: AnalyseType): TypeTechnician | null;
   findEquipment(sampleType: AnalyseType): TypeEquipment | null;
 }
-
-// const testSamplesOrder = new SamplesOrderPriority(dataSimple);
-// console.dir(testSamplesOrder.sampleOrderByPriority(), {
-//   depth: null,
-//   colors: true,
-// });
 
 class CalculateTime implements ITimeCalculator {
   getEndTime(startTime: string, duration: number): string {
@@ -159,11 +172,12 @@ class CalculateTime implements ITimeCalculator {
       .padStart(2, "0")}`;
   }
 }
-const testCalculateTime = new CalculateTime();
-console.dir(testCalculateTime.getEndTime("09:00", 45), {
-  depth: null,
-  colors: true,
-});
+
+// const testCalculateTime = new CalculateTime();
+// console.dir(testCalculateTime.getEndTime("09:00", 45), {
+//   depth: null,
+//   colors: true,
+// });
 
 // Trouve les ressources compatibles
 class ResourceFinder implements IResourceFinder {
