@@ -69,7 +69,9 @@ interface LabData {
   technicians: TypeTechnician[];
   equipment: TypeEquipment[];
 }
-
+interface ISampleSorter {
+  sort(samples: TypeSample[]): TypeSample[];
+}
 interface ScheduleItem {
   sampleId: string;
   technicianId: string;
@@ -84,33 +86,8 @@ interface ScheduleMetrics {
   efficiency: number;
   conflicts: number;
 }
-class SamplesInspector {
-  constructor(private sample: TypeSample) {}
-
-  public priority(): number {
-    switch (this.sample.priority) {
-      case "STAT":
-        return 1;
-      case "URGENT":
-        return 2;
-      case "ROUTINE":
-        return 3;
-      default:
-        return 99;
-    }
-  }
-
-  public arrivalMinutes(): number {
-    const [hours, minutes] = this.sample.arrivalTime.split(":").map(Number);
-    return Number(hours) * 60 + Number(minutes);
-  }
-}
-interface ISampleSorter {
-  sort(samples: TypeSample[]): TypeSample[];
-}
 
 class SamplesOrderPriority implements ISampleSorter {
-  constructor(timeTominute: CalculateTime = new CalculateTime()) {}
   sort(samples: TypeSample[]): TypeSample[] {
     return [...samples].sort((a, b) => {
       const priorityOrder: Record<Priority, number> = {
@@ -134,6 +111,11 @@ class SamplesOrderPriority implements ISampleSorter {
     return Number(hours) * 60 + Number(minutes);
   }
 }
+interface ISampleSorter {
+  sort(samples: TypeSample[]): TypeSample[];
+}
+
+
 
 const testSampleSorter = new SamplesOrderPriority();
 console.dir(testSampleSorter.sort(dataSimple.samples), {
