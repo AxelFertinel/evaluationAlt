@@ -4,7 +4,7 @@ const dataSimple: LabData = {
       id: "S001",
       type: "BLOOD",
       priority: "URGENT",
-      analysisTime: 45,
+      analysisTime: 60,
       arrivalTime: "09:00",
       patientId: "P001",
     },
@@ -13,8 +13,16 @@ const dataSimple: LabData = {
       type: "URINE",
       priority: "STAT",
       analysisTime: 30,
-      arrivalTime: "09:30",
+      arrivalTime: "09:15",
       patientId: "P002",
+    },
+    {
+      id: "S003",
+      type: "BLOOD",
+      priority: "ROUTINE",
+      analysisTime: 45,
+      arrivalTime: "09:00",
+      patientId: "P003",
     },
   ],
   technicians: [
@@ -27,8 +35,8 @@ const dataSimple: LabData = {
     },
     {
       id: "T002",
-      name: "BOB",
-      speciality: "URINE",
+      name: "Bob",
+      speciality: "GENERAL",
       startTime: "08:00",
       endTime: "17:00",
     },
@@ -36,13 +44,13 @@ const dataSimple: LabData = {
   equipment: [
     {
       id: "E001",
-      name: "Hematology Analyzer",
+      name: "Blood analyzer",
       type: "BLOOD",
       available: true,
     },
     {
       id: "E002",
-      name: "Urine Analyzer",
+      name: "Urine analyzer",
       type: "URINE",
       available: true,
     },
@@ -82,9 +90,11 @@ interface LabData {
   technicians: TypeTechnician[];
   equipment: TypeEquipment[];
 }
+
 interface ISampleSorter {
   sort(samples: TypeSample[]): TypeSample[];
 }
+
 interface ScheduleItem {
   sampleId: string;
   technicianId: string;
@@ -193,7 +203,7 @@ class ResourceFinder implements IResourceFinder {
     private technicians: TypeTechnician[],
     private equipment: TypeEquipment[]
   ) {}
-
+  
   findTechnician(sampleType: AnalyseType): TypeTechnician | null {
     return (
       this.technicians.find(
@@ -267,6 +277,7 @@ class ScheduleItemBuilder {
 //     { depth: null, colors: true }
 //   );
 // }
+
 class LabScheduler {
   constructor(
     private resourceFinder: IResourceFinder,
@@ -340,3 +351,22 @@ class LabScheduler {
 //   colors: true,
 // });
 
+class planifyLab {
+  static create(data: LabData): LabScheduler {
+    const timeCalculator = new CalculateTime();
+    const resourceFinder = new ResourceFinder(data.technicians, data.equipment);
+    const sampleSorter = new SamplesOrderPriority();
+    const scheduleItemBuilder = new ScheduleItemBuilder(timeCalculator);
+
+    return new LabScheduler(
+      resourceFinder,
+      sampleSorter,
+      timeCalculator,
+      scheduleItemBuilder
+    );
+  }
+}
+
+const testPlanifyLab = planifyLab.create(dataSimple);
+const resultPlanifyLab = testPlanifyLab.generateSchedule(dataSimple);
+console.dir(resultPlanifyLab, { depth: null, colors: true });
