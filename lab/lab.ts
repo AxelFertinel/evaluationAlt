@@ -108,14 +108,17 @@ class SamplesInspector {
 
 class SamplesOrderPriority {
   constructor(private data: LabData) {}
+
   public sampleOrderByPriority(): TypeSample[] {
-    return this.data.samples.sort((a, b) => {
+    return [...this.data.samples].sort((a, b) => {
       const sampleA = new SamplesInspector(a);
       const sampleB = new SamplesInspector(b);
 
+      // D'abord par priorité
       const prioDiff = sampleA.priority() - sampleB.priority();
       if (prioDiff !== 0) return prioDiff;
 
+      // Si même priorité, par ordre d'arrivée
       return sampleA.arrivalMinutes() - sampleB.arrivalMinutes();
     });
   }

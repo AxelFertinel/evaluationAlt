@@ -10,25 +10,24 @@ const dataSimple: LabData = {
     },
     {
       id: "S002",
-      type: "BLOOD",
+      type: "URINE",
       priority: "STAT",
       analysisTime: 30,
       arrivalTime: "09:30",
       patientId: "P002",
-    },
-    {
-      id: "S003",
-      type: "BLOOD",
-      priority: "ROUTINE",
-      analysisTime: 20,
-      arrivalTime: "10:00",
-      patientId: "P003",
     },
   ],
   technicians: [
     {
       id: "T001",
       name: "Alice",
+      speciality: "URINE",
+      startTime: "08:00",
+      endTime: "17:00",
+    },
+    {
+      id: "T002",
+      name: "Bob",
       speciality: "BLOOD",
       startTime: "08:00",
       endTime: "17:00",
@@ -39,6 +38,12 @@ const dataSimple: LabData = {
       id: "E001",
       name: "Hematology Analyzer",
       type: "BLOOD",
+      available: true,
+    },
+    {
+      id: "E002",
+      name: "Hematology Analyzer",
+      type: "URINE",
       available: true,
     },
   ],
@@ -88,366 +93,200 @@ interface ScheduleItem {
 }
 
 interface ScheduleMetrics {
-  totalTime: string;
+  totalTime: number;
   efficiency: number;
   conflicts: number;
 }
 
-// ============================================================================
-// UTILITIES - Single Responsibility
-// ============================================================================
+class SamplesInspector {
+  constructor(private sample: TypeSample) {}
 
-class TimeHelper {
-  static toMinutes(time: string): number {
+  // Retourne un numéro de priorité (plus petit = plus urgent)
+  public priority(): number {
+    switch (this.sample.priority) {
+      case "STAT":
+        return 1;
+      case "URGENT":
+        return 2;
+      case "ROUTINE":
+        return 3;
+      default:
+        return 99;
+    }
+  }
+
+  // Convertit l'heure d'arrivée en minutes depuis minuit
+  public arrivalMinutes(): number {
+    const [hours, minutes] = this.sample.arrivalTime.split(":").map(Number);
+    return Number(hours) * 60 + Number(minutes);
+  }
+}
+
+class SamplesOrderPriority {
+  constructor(private data: LabData) {}
+
+  public sampleOrderByPriority(): TypeSample[] {
+    return [...this.data.samples].sort((a, b) => {
+      const sampleA = new SamplesInspector(a);
+      const sampleB = new SamplesInspector(b);
+
+      // D'abord par priorité
+      const prioDiff = sampleA.priority() - sampleB.priority();
+      if (prioDiff !== 0) return prioDiff;
+
+      // Si même priorité, par ordre d'arrivée
+      return sampleA.arrivalMinutes() - sampleB.arrivalMinutes();
+    });
+  }
+}
+
+class CalculateEndTime {
+  constructor(private startTime: string, private analysisTime: number) {}
+
+  public getEndTime(): string {
+    const [hours, minutes] = this.startTime.split(":").map(Number);
+    const totalMinutes =
+      Number(hours) * 60 + Number(minutes) + this.analysisTime;
+    const endHours = Math.floor(totalMinutes / 60);
+    const endMinutes = totalMinutes % 60;
+    return `${endHours.toString().padStart(2, "0")}:${endMinutes
+      .toString()
+      .padStart(2, "0")}`;
+  }
+
+  // Convertit une heure en minutes
+  public static timeToMinutes(time: string): number {
     const [hours, minutes] = time.split(":").map(Number);
     return Number(hours) * 60 + Number(minutes);
   }
 
-  static fromMinutes(totalMinutes: number): string {
+  // Convertit des minutes en heure
+  public static minutesToTime(totalMinutes: number): string {
     const hours = Math.floor(totalMinutes / 60);
     const minutes = totalMinutes % 60;
     return `${hours.toString().padStart(2, "0")}:${minutes
       .toString()
       .padStart(2, "0")}`;
   }
-
-  static addMinutes(startTime: string, duration: number): string {
-    return this.fromMinutes(this.toMinutes(startTime) + duration);
-  }
 }
 
-// ============================================================================
-// PRIORITY COMPARATOR - Single Responsibility
-// ============================================================================
+// ===== CLASSE PRINCIPALE DE PLANIFICATION =====
+class PlanifyLab {
+  constructor(private data: LabData) {}
 
-class SamplePriorityComparator {
-  private priorityMap: Record<Priority, number> = {
-    STAT: 1,
-    URGENT: 2,
-    ROUTINE: 3,
-  };
-
-  compare(a: TypeSample, b: TypeSample): number {
-    const prioDiff =
-      this.priorityMap[a.priority] - this.priorityMap[b.priority];
-    if (prioDiff !== 0) return prioDiff;
-
+  // Trouve un technicien compatible avec le type d'échantillon
+  private findCompatibleTechnician(
+    sampleType: AnalyseType
+  ): TypeTechnician | null {
     return (
-      TimeHelper.toMinutes(a.arrivalTime) - TimeHelper.toMinutes(b.arrivalTime)
+      this.data.technicians.find(
+        (tech) =>
+          tech.speciality === sampleType || tech.speciality === "GENERAL"
+      ) || null
     );
   }
-}
 
-// ============================================================================
-// SORTER - Single Responsibility
-// ============================================================================
-
-class SampleSorter {
-  constructor(private comparator: SamplePriorityComparator) {}
-
-  sort(samples: TypeSample[]): TypeSample[] {
-    return [...samples].sort((a, b) => this.comparator.compare(a, b));
-  }
-}
-
-// ============================================================================
-// RESOURCE MATCHERS - Open/Closed Principle
-// ============================================================================
-
-interface IResourceMatcher<T> {
-  canHandle(sample: TypeSample, resource: T): boolean;
-}
-
-class TechnicianMatcher implements IResourceMatcher<TypeTechnician> {
-  canHandle(sample: TypeSample, technician: TypeTechnician): boolean {
+  // Trouve un équipement compatible et disponible
+  private findCompatibleEquipment(
+    sampleType: AnalyseType
+  ): TypeEquipment | null {
     return (
-      technician.speciality === sample.type ||
-      technician.speciality === "GENERAL"
+      this.data.equipment.find(
+        (equip) => equip.type === sampleType && equip.available
+      ) || null
     );
   }
-}
 
-class EquipmentMatcher implements IResourceMatcher<TypeEquipment> {
-  canHandle(sample: TypeSample, equipment: TypeEquipment): boolean {
-    return equipment.available && equipment.type === sample.type;
-  }
-}
-
-// ============================================================================
-// RESOURCE FINDER - Single Responsibility + Liskov
-// ============================================================================
-
-class ResourceFinder<T> {
-  constructor(private resources: T[], private matcher: IResourceMatcher<T>) {}
-
-  find(sample: TypeSample): T | null {
-    for (const resource of this.resources) {
-      if (this.matcher.canHandle(sample, resource)) {
-        return resource;
-      }
-    }
-    return null;
-  }
-}
-
-// ============================================================================
-// AVAILABILITY MANAGER - Single Responsibility
-// ============================================================================
-
-class AvailabilityManager {
-  private availability: Map<string, number> = new Map();
-
-  constructor(initialAvailability: Map<string, number> = new Map()) {
-    this.availability = new Map(initialAvailability);
-  }
-
-  getAvailableTime(resourceId: string): number {
-    return this.availability.get(resourceId) || 0;
-  }
-
-  setAvailableTime(resourceId: string, time: number): void {
-    this.availability.set(resourceId, time);
-  }
-
-  updateAvailability(resourceId: string, endTime: number): void {
-    this.setAvailableTime(resourceId, endTime);
-  }
-}
-
-// ============================================================================
-// TIME SLOT CALCULATOR - Single Responsibility
-// ============================================================================
-
-class TimeSlotCalculator {
-  calculate(
-    sample: TypeSample,
-    technicianId: string,
-    equipmentId: string,
-    techAvailability: AvailabilityManager,
-    equipAvailability: AvailabilityManager
-  ): { startMinutes: number; endMinutes: number } {
-    const arrivalMinutes = TimeHelper.toMinutes(sample.arrivalTime);
-    const techAvailable = techAvailability.getAvailableTime(technicianId);
-    const equipAvailable = equipAvailability.getAvailableTime(equipmentId);
-
-    const startMinutes = Math.max(
-      arrivalMinutes,
-      techAvailable,
-      equipAvailable
-    );
-    const endMinutes = startMinutes + sample.analysisTime;
-
-    return { startMinutes, endMinutes };
-  }
-}
-
-// ============================================================================
-// SCHEDULE ITEM FACTORY - Single Responsibility
-// ============================================================================
-
-class ScheduleItemFactory {
-  create(
-    sample: TypeSample,
-    technician: TypeTechnician,
-    equipment: TypeEquipment,
-    startMinutes: number,
-    endMinutes: number
-  ): ScheduleItem {
-    return {
-      sampleId: sample.id,
-      technicianId: technician.id,
-      equipmentId: equipment.id,
-      startTime: TimeHelper.fromMinutes(startMinutes),
-      endTime: TimeHelper.fromMinutes(endMinutes),
-      priority: sample.priority,
-    };
-  }
-}
-
-// ============================================================================
-// METRICS CALCULATOR - Single Responsibility
-// ============================================================================
-
-class MetricsCalculator {
-  calculate(schedule: ScheduleItem[], conflictCount: number): ScheduleMetrics {
-    if (schedule.length === 0) {
-      return { totalTime: "00:00", efficiency: 100, conflicts: conflictCount };
-    }
-
-    const startTimes = schedule.map((s) => TimeHelper.toMinutes(s.startTime));
-    const endTimes = schedule.map((s) => TimeHelper.toMinutes(s.endTime));
-
-    const totalMinutes = Math.max(...endTimes) - Math.min(...startTimes);
-    const workTime = schedule.reduce(
-      (sum, s) =>
-        sum +
-        (TimeHelper.toMinutes(s.endTime) - TimeHelper.toMinutes(s.startTime)),
-      0
-    );
-
-    const efficiency = Math.round((workTime / totalMinutes) * 100);
-
-    return {
-      totalTime: TimeHelper.fromMinutes(totalMinutes),
-      efficiency,
-      conflicts: conflictCount,
-    };
-  }
-}
-
-// ============================================================================
-// SCHEDULE BUILDER - Interface Segregation
-// ============================================================================
-
-interface IScheduleBuilder {
-  buildSchedule(samples: TypeSample[]): ScheduleItem[];
-  getConflictCount(): number;
-}
-
-class ScheduleBuilder implements IScheduleBuilder {
-  private conflicts = 0;
-
-  constructor(
-    private technicianFinder: ResourceFinder<TypeTechnician>,
-    private equipmentFinder: ResourceFinder<TypeEquipment>,
-    private techAvailability: AvailabilityManager,
-    private equipAvailability: AvailabilityManager,
-    private timeSlotCalculator: TimeSlotCalculator,
-    private itemFactory: ScheduleItemFactory
-  ) {}
-
-  buildSchedule(samples: TypeSample[]): ScheduleItem[] {
-    const schedule: ScheduleItem[] = [];
-    this.conflicts = 0;
-
-    for (const sample of samples) {
-      const item = this.scheduleSample(sample);
-      if (item) {
-        schedule.push(item);
-      } else {
-        this.conflicts++;
-      }
-    }
-
-    return schedule;
-  }
-
-  getConflictCount(): number {
-    return this.conflicts;
-  }
-
-  private scheduleSample(sample: TypeSample): ScheduleItem | null {
-    const technician = this.technicianFinder.find(sample);
-    const equipment = this.equipmentFinder.find(sample);
-
-    if (!technician || !equipment) {
-      console.warn(
-        `⚠️  Cannot schedule sample ${sample.id}: missing resources`
-      );
-      return null;
-    }
-
-    const { startMinutes, endMinutes } = this.timeSlotCalculator.calculate(
-      sample,
-      technician.id,
-      equipment.id,
-      this.techAvailability,
-      this.equipAvailability
-    );
-
-    this.techAvailability.updateAvailability(technician.id, endMinutes);
-    this.equipAvailability.updateAvailability(equipment.id, endMinutes);
-
-    return this.itemFactory.create(
-      sample,
-      technician,
-      equipment,
-      startMinutes,
-      endMinutes
-    );
-  }
-}
-
-// ============================================================================
-// MAIN SCHEDULER - Dependency Inversion
-// ============================================================================
-
-class LabScheduler {
-  constructor(
-    private sorter: SampleSorter,
-    private scheduleBuilder: IScheduleBuilder,
-    private metricsCalculator: MetricsCalculator
-  ) {}
-
-  generateSchedule(samples: TypeSample[]): {
+  // Génère le planning complet
+  public generateSchedule(): {
     schedule: ScheduleItem[];
     metrics: ScheduleMetrics;
   } {
-    const sortedSamples = this.sorter.sort(samples);
-    const schedule = this.scheduleBuilder.buildSchedule(sortedSamples);
-    const metrics = this.metricsCalculator.calculate(
-      schedule,
-      this.scheduleBuilder.getConflictCount()
-    );
+    // 1. Trier les échantillons par priorité
+    const samples = new SamplesOrderPriority(this.data).sampleOrderByPriority();
+
+    const schedule: ScheduleItem[] = [];
+    let currentTime = 0; // Heure courante en minutes depuis minuit
+
+    // 2. Pour chaque échantillon, planifier son analyse
+    for (const sample of samples) {
+      const technician = this.findCompatibleTechnician(sample.type);
+      const equipment = this.findCompatibleEquipment(sample.type);
+
+      // Si pas de ressources compatibles, on skip
+      if (!technician || !equipment) {
+        console.warn(`Impossible de planifier ${sample.id}`);
+        continue;
+      }
+
+      const arrivalMinutes = new SamplesInspector(sample).arrivalMinutes();
+      const techStartMinutes = CalculateEndTime.timeToMinutes(
+        technician.startTime
+      );
+
+      // L'échantillon commence au plus tard de :
+      // - Son heure d'arrivée
+      // - La fin de l'échantillon précédent
+      // - Le début de service du technicien
+      const startTimeMinutes = Math.max(
+        currentTime,
+        arrivalMinutes,
+        techStartMinutes
+      );
+
+      const startTime = CalculateEndTime.minutesToTime(startTimeMinutes);
+      const endTimeCalc = new CalculateEndTime(startTime, sample.analysisTime);
+      const endTime = endTimeCalc.getEndTime();
+
+      schedule.push({
+        sampleId: sample.id,
+        technicianId: technician.id,
+        equipmentId: equipment.id,
+        startTime,
+        endTime,
+        priority: sample.priority,
+      });
+
+      // On met à jour l'heure courante
+      currentTime = CalculateEndTime.timeToMinutes(endTime);
+    }
+
+    // 3. Calculer les métriques
+    const metrics = this.calculateMetrics(schedule);
 
     return { schedule, metrics };
   }
-}
 
-// ============================================================================
-// FACTORY - Dependency Injection
-// ============================================================================
+  // Calcule les métriques de performance
+  private calculateMetrics(schedule: ScheduleItem[]): ScheduleMetrics {
+    if (schedule.length === 0) {
+      return { totalTime: 0, efficiency: 0, conflicts: 0 };
+    }
 
-class LabSchedulerFactory {
-  static create(data: LabData): LabScheduler {
-    // Availability managers
-    const techAvailability = new AvailabilityManager();
-    data.technicians.forEach((tech) => {
-      techAvailability.setAvailableTime(
-        tech.id,
-        TimeHelper.toMinutes(tech.startTime)
-      );
-    });
-
-    const equipAvailability = new AvailabilityManager();
-    data.equipment.forEach((equip) => {
-      equipAvailability.setAvailableTime(equip.id, 0);
-    });
-
-    // Resource finders
-    const technicianFinder = new ResourceFinder(
-      data.technicians,
-      new TechnicianMatcher()
+    // Temps total : de la première heure de début à la dernière heure de fin
+    const firstStart = CalculateEndTime.timeToMinutes(schedule[0]!.startTime);
+    const lastEnd = CalculateEndTime.timeToMinutes(
+      schedule[schedule.length - 1]!.endTime
     );
-    
-    const equipmentFinder = new ResourceFinder(
-      data.equipment,
-      new EquipmentMatcher()
-    );
+    const totalTime = lastEnd - firstStart;
 
-    // Builders and calculators
-    const timeSlotCalculator = new TimeSlotCalculator();
-    const itemFactory = new ScheduleItemFactory();
-    const scheduleBuilder = new ScheduleBuilder(
-      technicianFinder,
-      equipmentFinder,
-      techAvailability,
-      equipAvailability,
-      timeSlotCalculator,
-      itemFactory
-    );
+    // Temps d'analyse : somme des durées de chaque échantillon
+    const analysisTime = this.data.samples
+      .filter((s) => schedule.some((sch) => sch.sampleId === s.id))
+      .reduce((sum, s) => sum + s.analysisTime, 0);
 
-    const sorter = new SampleSorter(new SamplePriorityComparator());
-    const metricsCalculator = new MetricsCalculator();
+    // Efficacité : temps d'analyse / temps total (en %)
+    const efficiency =
+      totalTime > 0 ? Math.round((analysisTime / totalTime) * 1000) / 10 : 0;
 
-    return new LabScheduler(sorter, scheduleBuilder, metricsCalculator);
+    // Conflits : on pourrait détecter des chevauchements, ici on met 0
+    const conflicts = 0;
+
+    return { totalTime, efficiency, conflicts };
   }
 }
 
-// ============================================================================
-// USAGE
-// ============================================================================
-
-const scheduler = LabSchedulerFactory.create(dataSimple);
-const result = scheduler.generateSchedule(dataSimple.samples);
-console.dir(result, { depth: null, colors: true });
+// ===== TEST =====
+const testLab = new PlanifyLab(dataSimple);
+const result = testLab.generateSchedule();
+console.log(JSON.stringify(result, null, 2));
