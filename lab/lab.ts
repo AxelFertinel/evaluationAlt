@@ -123,21 +123,46 @@ class SamplesOrderPriority {
     });
   }
 }
+// const testSamplesOrder = new SamplesOrderPriority(dataSimple);
+// console.dir(testSamplesOrder.sampleOrderByPriority(), {
+//   depth: null,
+//   colors: true,
+// });
 
-class calculateEndTime {
+class CalculateTime {
   constructor(private startTime: string, private analysisTime: number) {}
+  // Calcule l'heure de fin en ajoutant le temps d'analyse au temps de début
   public getEndTime(): string {
-    const timeParts = this.startTime.split(":");
-    const hours = Number(timeParts[0]);
-    const minutes = Number(timeParts[1]);
-    const totalMinutes = hours * 60 + minutes + this.analysisTime;
+    const [hours, minutes] = this.startTime.split(":").map(Number);
+    const totalMinutes =
+      Number(hours) * 60 + Number(minutes) + this.analysisTime;
     const endHours = Math.floor(totalMinutes / 60);
     const endMinutes = totalMinutes % 60;
     return `${endHours.toString().padStart(2, "0")}:${endMinutes
       .toString()
       .padStart(2, "0")}`;
   }
+
+  // Convertit une heure en minutes
+  public static timeToMinutes(time: string): number {
+    const [hours, minutes] = time.split(":").map(Number);
+    return Number(hours) * 60 + Number(minutes);
+  }
+
+  // Convertit des minutes en heure
+  public static minutesToTime(totalMinutes: number): string {
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
+    return `${hours.toString().padStart(2, "0")}:${minutes
+      .toString()
+      .padStart(2, "0")}`;
+  }
 }
+// const testCalculateTime = new CalculateTime("09:00", 45);
+// console.dir(testCalculateTime.getEndTime(), {
+//   depth: null,
+//   colors: true,
+// });
 
 // check si sample.type est compatible avec technician.speciality et equipement.type
 // check si technician.startTime et endTime sont compatible avec sampale.arrivaleTime
@@ -156,7 +181,7 @@ class planifyLab {
 
     const schedule = {
       schedule: samples.map((sample) => {
-        const calcEndTime = new calculateEndTime(
+        const calcEndTime = new CalculateTime(
           sample.arrivalTime,
           sample.analysisTime
         );
@@ -181,5 +206,5 @@ class planifyLab {
   }
 }
 
-const testLab = new planifyLab(dataSimple);
-console.dir(testLab.generateSchedule(), { depth: null, colors: true });
+// const testLab = new planifyLab(dataSimple);
+// console.dir(testLab.generateSchedule(), { depth: null, colors: true });
