@@ -123,6 +123,12 @@ class SamplesOrderPriority {
     });
   }
 }
+
+interface IResourceFinder {
+  findTechnician(sampleType: AnalyseType): TypeTechnician | null;
+  findEquipment(sampleType: AnalyseType): TypeEquipment | null;
+}
+
 // const testSamplesOrder = new SamplesOrderPriority(dataSimple);
 // console.dir(testSamplesOrder.sampleOrderByPriority(), {
 //   depth: null,
@@ -164,11 +170,43 @@ class CalculateTime {
 //   colors: true,
 // });
 
-// check si sample.type est compatible avec technician.speciality et equipement.type
-// check si technician.startTime et endTime sont compatible avec sampale.arrivaleTime
-// check si equipement.available
-// un sample commence uniquement après que le précédent est terminé
-// faire le calcul des metrics
+// Trouve les ressources compatibles
+class ResourceFinder implements IResourceFinder {
+  constructor(
+    private technicians: TypeTechnician[],
+    private equipment: TypeEquipment[]
+  ) {}
+
+  findTechnician(sampleType: AnalyseType): TypeTechnician | null {
+    return (
+      this.technicians.find(
+        (tech) =>
+          tech.speciality === sampleType || tech.speciality === "GENERAL"
+      ) || null
+    );
+  }
+
+  findEquipment(sampleType: AnalyseType): TypeEquipment | null {
+    return (
+      this.equipment.find(
+        (equip) => equip.type === sampleType && equip.available
+      ) || null
+    );
+  }
+}
+
+// const testResourceFinder = new ResourceFinder(
+//   dataSimple.technicians,
+//   dataSimple.equipment
+// );
+// console.dir(testResourceFinder.findTechnician("BLOOD"), {
+//   depth: null,
+//   colors: true,
+// });
+// console.dir(testResourceFinder.findEquipment("BLOOD"), {
+//   depth: null,
+//   colors: true,
+// });
 
 class planifyLab {
   constructor(private data: LabData) {}

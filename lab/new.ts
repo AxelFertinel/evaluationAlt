@@ -1,3 +1,4 @@
+// ===== DONNÉES DE TEST =====
 const dataSimple: LabData = {
   samples: [
     {
@@ -10,7 +11,7 @@ const dataSimple: LabData = {
     },
     {
       id: "S002",
-      type: "URINE",
+      type: "BLOOD",
       priority: "STAT",
       analysisTime: 30,
       arrivalTime: "09:30",
@@ -21,13 +22,6 @@ const dataSimple: LabData = {
     {
       id: "T001",
       name: "Alice",
-      speciality: "URINE",
-      startTime: "08:00",
-      endTime: "17:00",
-    },
-    {
-      id: "T002",
-      name: "Bob",
       speciality: "BLOOD",
       startTime: "08:00",
       endTime: "17:00",
@@ -40,15 +34,10 @@ const dataSimple: LabData = {
       type: "BLOOD",
       available: true,
     },
-    {
-      id: "E002",
-      name: "Hematology Analyzer",
-      type: "URINE",
-      available: true,
-    },
   ],
 };
 
+// ===== TYPES =====
 type Priority = "STAT" | "URGENT" | "ROUTINE";
 type AnalyseType = "BLOOD" | "URINE" | "TISSUE";
 type TechnicianSpeciality = "BLOOD" | "URINE" | "TISSUE" | "GENERAL";
@@ -98,70 +87,112 @@ interface ScheduleMetrics {
   conflicts: number;
 }
 
-class SamplesInspector {
-  constructor(private sample: TypeSample) {}
+// ===== INTERFACES (Dependency Inversion Principle) =====
 
-  // Retourne un numéro de priorité (plus petit = plus urgent)
-  public priority(): number {
-    switch (this.sample.priority) {
-      case "STAT":
-        return 1;
-      case "URGENT":
-        return 2;
-      case "ROUTINE":
-        return 3;
-      default:
-        return 99;
-    }
+// Interface pour la recherche de ressources
+interface IResourceFinder {
+  findTechnician(sampleType: AnalyseType): TypeTechnician | null;
+  findEquipment(sampleType: AnalyseType): TypeEquipment | null;
+}
+
+// Interface pour le tri des échantillons
+interface ISampleSorter {
+  sort(samples: TypeSample[]): TypeSample[];
+}
+
+// Interface pour le calcul du temps
+interface ITimeCalculator {
+  calculateStartTime(
+    arrivalTime: string,
+    currentTime: number,
+    technicianStartTime: string
+  ): number;
+  calculateEndTime(startTime: string, duration: number): string;
+  timeToMinutes(time: string): number;
+  minutesToTime(minutes: number): string;
+}
+
+// Interface pour le calcul des métriques
+interface IMetricsCalculator {
+  calculate(schedule: ScheduleItem[], samples: TypeSample[]): ScheduleMetrics;
+}
+
+// ===== IMPLÉMENTATIONS =====
+
+// 🎯 Single Responsibility : Trouve les ressources compatibles
+class ResourceFinder implements IResourceFinder {
+  constructor(
+    private technicians: TypeTechnician[],
+    private equipment: TypeEquipment[]
+  ) {}
+
+  findTechnician(sampleType: AnalyseType): TypeTechnician | null {
+    return (
+      this.technicians.find(
+        (tech) =>
+          tech.speciality === sampleType || tech.speciality === "GENERAL"
+      ) || null
+    );
   }
 
-  // Convertit l'heure d'arrivée en minutes depuis minuit
-  public arrivalMinutes(): number {
-    const [hours, minutes] = this.sample.arrivalTime.split(":").map(Number);
-    return Number(hours) * 60 + Number(minutes);
+  findEquipment(sampleType: AnalyseType): TypeEquipment | null {
+    return (
+      this.equipment.find(
+        (equip) => equip.type === sampleType && equip.available
+      ) || null
+    );
   }
 }
 
-class SamplesOrderPriority {
-  constructor(private data: LabData) {}
+// 🎯 Single Responsibility : Trie les échantillons par priorité
+class PrioritySampleSorter implements ISampleSorter {
+  sort(samples: TypeSample[]): TypeSample[] {
+    return [...samples].sort((a, b) => {
+      const priorityOrder: Record<Priority, number> = {
+        STAT: 1,
+        URGENT: 2,
+        ROUTINE: 3,
+      };
 
-  public sampleOrderByPriority(): TypeSample[] {
-    return [...this.data.samples].sort((a, b) => {
-      const sampleA = new SamplesInspector(a);
-      const sampleB = new SamplesInspector(b);
-
-      // D'abord par priorité
-      const prioDiff = sampleA.priority() - sampleB.priority();
+      const prioDiff = priorityOrder[a.priority] - priorityOrder[b.priority];
       if (prioDiff !== 0) return prioDiff;
 
       // Si même priorité, par ordre d'arrivée
-      return sampleA.arrivalMinutes() - sampleB.arrivalMinutes();
+      return (
+        this.timeToMinutes(a.arrivalTime) - this.timeToMinutes(b.arrivalTime)
+      );
     });
   }
-}
 
-class CalculateEndTime {
-  constructor(private startTime: string, private analysisTime: number) {}
-
-  public getEndTime(): string {
-    const [hours, minutes] = this.startTime.split(":").map(Number);
-    const totalMinutes =
-      Number(hours) * 60 + Number(minutes) + this.analysisTime;
-    const endHours = Math.floor(totalMinutes / 60);
-    const endMinutes = totalMinutes % 60;
-    return `${endHours.toString().padStart(2, "0")}:${endMinutes
-      .toString()
-      .padStart(2, "0")}`;
-  }
-
-  // Convertit une heure en minutes
-  public static timeToMinutes(time: string): number {
+  private timeToMinutes(time: string): number {
     const [hours, minutes] = time.split(":").map(Number);
     return Number(hours) * 60 + Number(minutes);
   }
+}
 
-  // Convertit des minutes en heure
-  public static minutesToTime(totalMinutes: number): string {
+// 🎯 Single Responsibility : Gère tous les calculs de temps
+class TimeCalculator implements ITimeCalculator {
+  calculateStartTime(
+    arrivalTime: string,
+    currentTime: number,
+    technicianStartTime: string
+  ): number {
+    const arrivalMinutes = this.timeToMinutes(arrivalTime);
+    const techStartMinutes = this.timeToMinutes(technicianStartTime);
+    return Math.max(currentTime, arrivalMinutes, techStartMinutes);
+  }
+
+  calculateEndTime(startTime: string, duration: number): string {
+    const startMinutes = this.timeToMinutes(startTime);
+    return this.minutesToTime(startMinutes + duration);
+  }
+
+  timeToMinutes(time: string): number {
+    const [hours, minutes] = time.split(":").map(Number);
+    return hours * 60 + minutes;
+  }
+
+  minutesToTime(totalMinutes: number): string {
     const hours = Math.floor(totalMinutes / 60);
     const minutes = totalMinutes % 60;
     return `${hours.toString().padStart(2, "0")}:${minutes
@@ -170,123 +201,158 @@ class CalculateEndTime {
   }
 }
 
-// ===== CLASSE PRINCIPALE DE PLANIFICATION =====
-class PlanifyLab {
-  constructor(private data: LabData) {}
+// 🎯 Single Responsibility : Calcule les métriques de performance
+class MetricsCalculator implements IMetricsCalculator {
+  constructor(private timeCalculator: ITimeCalculator) {}
 
-  // Trouve un technicien compatible avec le type d'échantillon
-  private findCompatibleTechnician(
-    sampleType: AnalyseType
-  ): TypeTechnician | null {
-    return (
-      this.data.technicians.find(
-        (tech) =>
-          tech.speciality === sampleType || tech.speciality === "GENERAL"
-      ) || null
-    );
-  }
-
-  // Trouve un équipement compatible et disponible
-  private findCompatibleEquipment(
-    sampleType: AnalyseType
-  ): TypeEquipment | null {
-    return (
-      this.data.equipment.find(
-        (equip) => equip.type === sampleType && equip.available
-      ) || null
-    );
-  }
-
-  // Génère le planning complet
-  public generateSchedule(): {
-    schedule: ScheduleItem[];
-    metrics: ScheduleMetrics;
-  } {
-    // 1. Trier les échantillons par priorité
-    const samples = new SamplesOrderPriority(this.data).sampleOrderByPriority();
-
-    const schedule: ScheduleItem[] = [];
-    let currentTime = 0; // Heure courante en minutes depuis minuit
-
-    // 2. Pour chaque échantillon, planifier son analyse
-    for (const sample of samples) {
-      const technician = this.findCompatibleTechnician(sample.type);
-      const equipment = this.findCompatibleEquipment(sample.type);
-
-      // Si pas de ressources compatibles, on skip
-      if (!technician || !equipment) {
-        console.warn(`Impossible de planifier ${sample.id}`);
-        continue;
-      }
-
-      const arrivalMinutes = new SamplesInspector(sample).arrivalMinutes();
-      const techStartMinutes = CalculateEndTime.timeToMinutes(
-        technician.startTime
-      );
-
-      // L'échantillon commence au plus tard de :
-      // - Son heure d'arrivée
-      // - La fin de l'échantillon précédent
-      // - Le début de service du technicien
-      const startTimeMinutes = Math.max(
-        currentTime,
-        arrivalMinutes,
-        techStartMinutes
-      );
-
-      const startTime = CalculateEndTime.minutesToTime(startTimeMinutes);
-      const endTimeCalc = new CalculateEndTime(startTime, sample.analysisTime);
-      const endTime = endTimeCalc.getEndTime();
-
-      schedule.push({
-        sampleId: sample.id,
-        technicianId: technician.id,
-        equipmentId: equipment.id,
-        startTime,
-        endTime,
-        priority: sample.priority,
-      });
-
-      // On met à jour l'heure courante
-      currentTime = CalculateEndTime.timeToMinutes(endTime);
-    }
-
-    // 3. Calculer les métriques
-    const metrics = this.calculateMetrics(schedule);
-
-    return { schedule, metrics };
-  }
-
-  // Calcule les métriques de performance
-  private calculateMetrics(schedule: ScheduleItem[]): ScheduleMetrics {
+  calculate(schedule: ScheduleItem[], samples: TypeSample[]): ScheduleMetrics {
     if (schedule.length === 0) {
       return { totalTime: 0, efficiency: 0, conflicts: 0 };
     }
 
-    // Temps total : de la première heure de début à la dernière heure de fin
-    const firstStart = CalculateEndTime.timeToMinutes(schedule[0]!.startTime);
-    const lastEnd = CalculateEndTime.timeToMinutes(
+    const totalTime = this.calculateTotalTime(schedule);
+    const analysisTime = this.calculateAnalysisTime(schedule, samples);
+    const efficiency = this.calculateEfficiency(analysisTime, totalTime);
+
+    return {
+      totalTime,
+      efficiency,
+      conflicts: 0, // Peut être étendu plus tard
+    };
+  }
+
+  private calculateTotalTime(schedule: ScheduleItem[]): number {
+    const firstStart = this.timeCalculator.timeToMinutes(
+      schedule[0]!.startTime
+    );
+    const lastEnd = this.timeCalculator.timeToMinutes(
       schedule[schedule.length - 1]!.endTime
     );
-    const totalTime = lastEnd - firstStart;
+    return lastEnd - firstStart;
+  }
 
-    // Temps d'analyse : somme des durées de chaque échantillon
-    const analysisTime = this.data.samples
+  private calculateAnalysisTime(
+    schedule: ScheduleItem[],
+    samples: TypeSample[]
+  ): number {
+    return samples
       .filter((s) => schedule.some((sch) => sch.sampleId === s.id))
       .reduce((sum, s) => sum + s.analysisTime, 0);
+  }
 
-    // Efficacité : temps d'analyse / temps total (en %)
-    const efficiency =
-      totalTime > 0 ? Math.round((analysisTime / totalTime) * 1000) / 10 : 0;
-
-    // Conflits : on pourrait détecter des chevauchements, ici on met 0
-    const conflicts = 0;
-
-    return { totalTime, efficiency, conflicts };
+  private calculateEfficiency(analysisTime: number, totalTime: number): number {
+    return totalTime > 0
+      ? Math.round((analysisTime / totalTime) * 1000) / 10
+      : 0;
   }
 }
 
-// ===== TEST =====
-const testLab = new PlanifyLab(dataSimple);
-const result = testLab.generateSchedule();
+// 🎯 Single Responsibility : Crée un item de planning
+class ScheduleItemBuilder {
+  constructor(private timeCalculator: ITimeCalculator) {}
+
+  build(
+    sample: TypeSample,
+    technician: TypeTechnician,
+    equipment: TypeEquipment,
+    startTimeMinutes: number
+  ): ScheduleItem {
+    const startTime = this.timeCalculator.minutesToTime(startTimeMinutes);
+    const endTime = this.timeCalculator.calculateEndTime(
+      startTime,
+      sample.analysisTime
+    );
+
+    return {
+      sampleId: sample.id,
+      technicianId: technician.id,
+      equipmentId: equipment.id,
+      startTime,
+      endTime,
+      priority: sample.priority,
+    };
+  }
+}
+
+// 🎯 Open/Closed : Cette classe orchestre le tout
+// Elle peut être étendue sans modification grâce aux interfaces
+class LabScheduler {
+  constructor(
+    private resourceFinder: IResourceFinder,
+    private sampleSorter: ISampleSorter,
+    private timeCalculator: ITimeCalculator,
+    private metricsCalculator: IMetricsCalculator,
+    private scheduleItemBuilder: ScheduleItemBuilder
+  ) {}
+
+  generateSchedule(data: LabData): {
+    schedule: ScheduleItem[];
+    metrics: ScheduleMetrics;
+  } {
+    const sortedSamples = this.sampleSorter.sort(data.samples);
+    const schedule: ScheduleItem[] = [];
+    let currentTime = 0;
+
+    for (const sample of sortedSamples) {
+      const scheduleItem = this.scheduleSample(sample, currentTime);
+
+      if (scheduleItem) {
+        schedule.push(scheduleItem);
+        currentTime = this.timeCalculator.timeToMinutes(scheduleItem.endTime);
+      }
+    }
+
+    const metrics = this.metricsCalculator.calculate(schedule, data.samples);
+    return { schedule, metrics };
+  }
+
+  private scheduleSample(
+    sample: TypeSample,
+    currentTime: number
+  ): ScheduleItem | null {
+    const technician = this.resourceFinder.findTechnician(sample.type);
+    const equipment = this.resourceFinder.findEquipment(sample.type);
+
+    if (!technician || !equipment) {
+      console.warn(`⚠️ Impossible de planifier ${sample.id}`);
+      return null;
+    }
+
+    const startTimeMinutes = this.timeCalculator.calculateStartTime(
+      sample.arrivalTime,
+      currentTime,
+      technician.startTime
+    );
+
+    return this.scheduleItemBuilder.build(
+      sample,
+      technician,
+      equipment,
+      startTimeMinutes
+    );
+  }
+}
+
+// ===== FACTORY (facilite l'instanciation) =====
+class LabSchedulerFactory {
+  static create(data: LabData): LabScheduler {
+    const timeCalculator = new TimeCalculator();
+    const resourceFinder = new ResourceFinder(data.technicians, data.equipment);
+    const sampleSorter = new PrioritySampleSorter();
+    const metricsCalculator = new MetricsCalculator(timeCalculator);
+    const scheduleItemBuilder = new ScheduleItemBuilder(timeCalculator);
+
+    return new LabScheduler(
+      resourceFinder,
+      sampleSorter,
+      timeCalculator,
+      metricsCalculator,
+      scheduleItemBuilder
+    );
+  }
+}
+
+// ===== UTILISATION =====
+const scheduler = LabSchedulerFactory.create(dataSimple);
+const result = scheduler.generateSchedule(dataSimple);
 console.log(JSON.stringify(result, null, 2));
