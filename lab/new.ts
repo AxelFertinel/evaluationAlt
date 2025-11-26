@@ -119,7 +119,7 @@ interface IMetricsCalculator {
 
 // ===== IMPLÉMENTATIONS =====
 
-// 🎯 Single Responsibility : Trouve les ressources compatibles
+// Trouve les ressources compatibles
 class ResourceFinder implements IResourceFinder {
   constructor(
     private technicians: TypeTechnician[],
@@ -144,7 +144,7 @@ class ResourceFinder implements IResourceFinder {
   }
 }
 
-// 🎯 Single Responsibility : Trie les échantillons par priorité
+// Trie les échantillons par priorité
 class PrioritySampleSorter implements ISampleSorter {
   sort(samples: TypeSample[]): TypeSample[] {
     return [...samples].sort((a, b) => {
@@ -170,7 +170,7 @@ class PrioritySampleSorter implements ISampleSorter {
   }
 }
 
-// 🎯 Single Responsibility : Gère tous les calculs de temps
+// Gère tous les calculs de temps
 class TimeCalculator implements ITimeCalculator {
   calculateStartTime(
     arrivalTime: string,
@@ -189,7 +189,7 @@ class TimeCalculator implements ITimeCalculator {
 
   timeToMinutes(time: string): number {
     const [hours, minutes] = time.split(":").map(Number);
-    return hours * 60 + minutes;
+    return Number(hours) * 60 + Number(minutes);
   }
 
   minutesToTime(totalMinutes: number): string {
@@ -201,7 +201,7 @@ class TimeCalculator implements ITimeCalculator {
   }
 }
 
-// 🎯 Single Responsibility : Calcule les métriques de performance
+// Calcule les métriques de performance
 class MetricsCalculator implements IMetricsCalculator {
   constructor(private timeCalculator: ITimeCalculator) {}
 
@@ -247,7 +247,7 @@ class MetricsCalculator implements IMetricsCalculator {
   }
 }
 
-// 🎯 Single Responsibility : Crée un item de planning
+// Crée un item de planning
 class ScheduleItemBuilder {
   constructor(private timeCalculator: ITimeCalculator) {}
 

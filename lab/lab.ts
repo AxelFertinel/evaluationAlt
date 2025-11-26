@@ -123,7 +123,12 @@ class SamplesOrderPriority {
     });
   }
 }
-
+// Interface pour le calcul du temps
+interface ITimeCalculator {
+  getEndTime(startTime: string, duration: number): string;
+  timeToMinutes(time: string): number;
+  minutesToTime(minutes: number): string;
+}
 interface IResourceFinder {
   findTechnician(sampleType: AnalyseType): TypeTechnician | null;
   findEquipment(sampleType: AnalyseType): TypeEquipment | null;
@@ -135,28 +140,18 @@ interface IResourceFinder {
 //   colors: true,
 // });
 
-class CalculateTime {
-  constructor(private startTime: string, private analysisTime: number) {}
-  // Calcule l'heure de fin en ajoutant le temps d'analyse au temps de début
-  public getEndTime(): string {
-    const [hours, minutes] = this.startTime.split(":").map(Number);
-    const totalMinutes =
-      Number(hours) * 60 + Number(minutes) + this.analysisTime;
-    const endHours = Math.floor(totalMinutes / 60);
-    const endMinutes = totalMinutes % 60;
-    return `${endHours.toString().padStart(2, "0")}:${endMinutes
-      .toString()
-      .padStart(2, "0")}`;
+class CalculateTime implements ITimeCalculator {
+  getEndTime(startTime: string, duration: number): string {
+    const startMinutes = this.timeToMinutes(startTime);
+    return this.minutesToTime(startMinutes + duration);
   }
 
-  // Convertit une heure en minutes
-  public static timeToMinutes(time: string): number {
+  timeToMinutes(time: string): number {
     const [hours, minutes] = time.split(":").map(Number);
     return Number(hours) * 60 + Number(minutes);
   }
 
-  // Convertit des minutes en heure
-  public static minutesToTime(totalMinutes: number): string {
+  minutesToTime(totalMinutes: number): string {
     const hours = Math.floor(totalMinutes / 60);
     const minutes = totalMinutes % 60;
     return `${hours.toString().padStart(2, "0")}:${minutes
@@ -164,11 +159,11 @@ class CalculateTime {
       .padStart(2, "0")}`;
   }
 }
-// const testCalculateTime = new CalculateTime("09:00", 45);
-// console.dir(testCalculateTime.getEndTime(), {
-//   depth: null,
-//   colors: true,
-// });
+const testCalculateTime = new CalculateTime();
+console.dir(testCalculateTime.getEndTime("09:00", 45), {
+  depth: null,
+  colors: true,
+});
 
 // Trouve les ressources compatibles
 class ResourceFinder implements IResourceFinder {
@@ -208,41 +203,41 @@ class ResourceFinder implements IResourceFinder {
 //   colors: true,
 // });
 
-class planifyLab {
-  constructor(private data: LabData) {}
+// class planifyLab {
+//   constructor(private data: LabData) {}
 
-  public generateSchedule(): any {
-    const samples = new SamplesOrderPriority(this.data).sampleOrderByPriority();
+//   public generateSchedule(): any {
+//     const samples = new SamplesOrderPriority(this.data).sampleOrderByPriority();
 
-    const technician = this.data.technicians[0];
-    const equipment = this.data.equipment[0];
+//     const technician = this.data.technicians[0];
+//     const equipment = this.data.equipment[0];
 
-    const schedule = {
-      schedule: samples.map((sample) => {
-        const calcEndTime = new CalculateTime(
-          sample.arrivalTime,
-          sample.analysisTime
-        );
+//     const schedule = {
+//       schedule: samples.map((sample) => {
+//         const calcEndTime = new CalculateTime(
+//           sample.arrivalTime,
+//           sample.analysisTime
+//         );
 
-        return {
-          sampleId: sample?.id,
-          technicianId: technician?.id,
-          equipmentId: equipment?.id,
-          startTime: sample?.arrivalTime,
-          endTime: calcEndTime.getEndTime(),
-          priority: sample?.priority,
-        };
-      }),
-      metrics: {
-        totalTime: "xxx",
-        efficiency: 100,
-        conflicts: 0,
-      },
-    };
+//         return {
+//           sampleId: sample?.id,
+//           technicianId: technician?.id,
+//           equipmentId: equipment?.id,
+//           startTime: sample?.arrivalTime,
+//           endTime: calcEndTime.getEndTime(),
+//           priority: sample?.priority,
+//         };
+//       }),
+//       metrics: {
+//         totalTime: "xxx",
+//         efficiency: 100,
+//         conflicts: 0,
+//       },
+//     };
 
-    return schedule;
-  }
-}
+//     return schedule;
+//   }
+// }
 
 // const testLab = new planifyLab(dataSimple);
 // console.dir(testLab.generateSchedule(), { depth: null, colors: true });
