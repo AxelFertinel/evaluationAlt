@@ -203,7 +203,7 @@ class ResourceFinder implements IResourceFinder {
     private technicians: TypeTechnician[],
     private equipment: TypeEquipment[]
   ) {}
-  
+
   findTechnician(sampleType: AnalyseType): TypeTechnician | null {
     return (
       this.technicians.find(
@@ -286,9 +286,7 @@ class LabScheduler {
     private scheduleItemBuilder: ScheduleItemBuilder
   ) {}
 
-  generateSchedule(data: LabData): {
-    schedule: ScheduleItem[];
-  } {
+  generateSchedule(data: LabData): ScheduleResult {
     const sortedSamples = this.sampleSorter.sort(data.samples);
     const schedule: ScheduleItem[] = [];
     let currentTime = 0;
@@ -301,6 +299,15 @@ class LabScheduler {
         currentTime = this.timeCalculator.timeToMinutes(scheduleItem.endTime);
       }
     }
+
+    const metrics: ScheduleMetrics = {
+      totalTime: this.timeCalculator.minutesToTime(currentTime),
+      efficiency:
+        schedule.length > 0
+          ? Math.round((schedule.length / data.samples.length) * 100)
+          : 0,
+      conflicts: 0,
+    };
 
     return { schedule };
   }
@@ -367,6 +374,44 @@ class planifyLab {
   }
 }
 
-const testPlanifyLab = planifyLab.create(dataSimple);
-const resultPlanifyLab = testPlanifyLab.generateSchedule(dataSimple);
-console.dir(resultPlanifyLab, { depth: null, colors: true });
+// const testPlanifyLab = planifyLab.create(dataSimple);
+// const resultPlanifyLab = testPlanifyLab.generateSchedule(dataSimple);
+// console.dir(resultPlanifyLab, { depth: null, colors: true });
+
+interface ScheduleResult {
+  schedule: ScheduleItem[];
+}
+
+import * as fs from "fs";
+import * as path from "path";
+
+async function saveSchedule(
+  result: ScheduleResult,
+  outputPath: string = "./schedule/schedule.json"
+) {
+  try {
+    // Créer le dossier si nécessaire
+    const dir = path.dirname(outputPath);
+    fs.mkdirSync(dir, { recursive: true });
+
+    // Sauvegarder le fichier
+    const jsonContent = JSON.stringify(result, null, 2);
+    fs.writeFileSync(outputPath, jsonContent, "utf-8");
+
+    console.log(`✅ Schedule sauvegardé dans: ${outputPath}`);
+
+    // Afficher un résumé
+    console.log(`\n📊 Résumé:`);
+    console.log(`   - ${result.schedule.length} échantillons planifiés`);
+
+    return outputPath;
+  } catch (error) {
+    console.error("❌ Erreur lors de la sauvegarde:", error);
+    throw error;
+  }
+}
+
+// Utilisation
+const scheduler = planifyLab.create(dataSimple);
+const result = scheduler.generateSchedule(dataSimple);
+saveSchedule(result);
