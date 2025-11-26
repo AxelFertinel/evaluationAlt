@@ -36,11 +36,7 @@ class SamplesOrderPriority implements ISampleSorter {
   }
 }
 
-// const testSampleSorter = new SamplesOrderPriority();
-// console.dir(testSampleSorter.sort(data.samples), {
-//   depth: null,
-//   colors: true,
-// });
+
 
 class CalculateTime implements ITimeCalculator {
   calculateStartTime(
@@ -72,11 +68,7 @@ class CalculateTime implements ITimeCalculator {
   }
 }
 
-// const testCalculateTime = new CalculateTime();
-// console.dir(testCalculateTime.getEndTime("09:00", 45), {
-//   depth: null,
-//   colors: true,
-// });
+
 
 // Trouve les ressources compatibles
 class ResourceFinder implements IResourceFinder {
@@ -103,18 +95,6 @@ class ResourceFinder implements IResourceFinder {
   }
 }
 
-// const testResourceFinder = new ResourceFinder(
-//   data.technicians,
-//   data.equipment
-// );
-// console.dir(testResourceFinder.findTechnician("BLOOD"), {
-//   depth: null,
-//   colors: true,
-// });
-// console.dir(testResourceFinder.findEquipment("BLOOD"), {
-//   depth: null,
-//   colors: true,
-// });
 
 class ScheduleItemBuilder {
   constructor(private timeCalculator: ITimeCalculator) {}
@@ -141,23 +121,6 @@ class ScheduleItemBuilder {
     };
   }
 }
-
-// const testScheduleItemBuilder = new ScheduleItemBuilder(new CalculateTime());
-// const testSample = data.samples[0];
-// const testTechnician = data.technicians[0];
-// const testEquipment = data.equipment[0];
-
-// if (testSample && testTechnician && testEquipment) {
-//   console.dir(
-//     testScheduleItemBuilder.build(
-//       testSample,
-//       testTechnician,
-//       testEquipment,
-//       540
-//     ),
-//     { depth: null, colors: true }
-//   );
-// }
 
 class LabScheduler {
   constructor(
@@ -228,16 +191,7 @@ class LabScheduler {
   }
 }
 
-// const labScheduler = new LabScheduler(
-//   new ResourceFinder(data.technicians, data.equipment),
-//   new SamplesOrderPriority(),
-//   new CalculateTime(),
-//   new ScheduleItemBuilder(new CalculateTime())
-// );
-// console.dir(labScheduler.generateSchedule(data), {
-//   depth: null,
-//   colors: true,
-// });
+
 
 class planifyLab {
   static create(data: LabData): LabScheduler {
@@ -255,9 +209,6 @@ class planifyLab {
   }
 }
 
-// const testPlanifyLab = planifyLab.create(data);
-// const resultPlanifyLab = testPlanifyLab.generateSchedule(data);
-// console.dir(resultPlanifyLab, { depth: null, colors: true });
 
 interface ScheduleResult {
   schedule: ScheduleItem[];
