@@ -1,134 +1,15 @@
-const dataSimple: LabData = {
-  samples: [
-    {
-      id: "S001",
-      type: "BLOOD",
-      priority: "URGENT",
-      analysisTime: 60,
-      arrivalTime: "09:00",
-      patientId: "P001",
-    },
-    {
-      id: "S002",
-      type: "URINE",
-      priority: "STAT",
-      analysisTime: 30,
-      arrivalTime: "09:15",
-      patientId: "P002",
-    },
-    {
-      id: "S003",
-      type: "BLOOD",
-      priority: "ROUTINE",
-      analysisTime: 45,
-      arrivalTime: "09:00",
-      patientId: "P003",
-    },
-  ],
-  technicians: [
-    {
-      id: "T001",
-      name: "Alice",
-      speciality: "BLOOD",
-      startTime: "08:00",
-      endTime: "17:00",
-    },
-    {
-      id: "T002",
-      name: "Bob",
-      speciality: "GENERAL",
-      startTime: "08:00",
-      endTime: "17:00",
-    },
-  ],
-  equipment: [
-    {
-      id: "E001",
-      name: "Blood analyzer",
-      type: "BLOOD",
-      available: true,
-    },
-    {
-      id: "E002",
-      name: "Urine analyzer",
-      type: "URINE",
-      available: true,
-    },
-  ],
-};
-
-type Priority = "STAT" | "URGENT" | "ROUTINE";
-type AnalyseType = "BLOOD" | "URINE" | "TISSUE";
-type TechnicianSpeciality = "BLOOD" | "URINE" | "TISSUE" | "GENERAL";
-
-interface TypeSample {
-  id: string;
-  type: AnalyseType;
-  priority: Priority;
-  analysisTime: number;
-  arrivalTime: string;
-  patientId: string;
-}
-
-interface TypeTechnician {
-  id: string;
-  name: string;
-  speciality: TechnicianSpeciality;
-  startTime: string;
-  endTime: string;
-}
-
-interface TypeEquipment {
-  id: string;
-  name: string;
-  type: AnalyseType;
-  available: boolean;
-}
-
-interface LabData {
-  samples: TypeSample[];
-  technicians: TypeTechnician[];
-  equipment: TypeEquipment[];
-}
-
-interface ISampleSorter {
-  sort(samples: TypeSample[]): TypeSample[];
-}
-
-interface ScheduleItem {
-  sampleId: string;
-  technicianId: string;
-  equipmentId: string;
-  startTime: string;
-  endTime: string;
-  priority: Priority;
-}
-
-interface ScheduleMetrics {
-  totalTime: string;
-  efficiency: number;
-  conflicts: number;
-}
-
-interface ISampleSorter {
-  sort(samples: TypeSample[]): TypeSample[];
-}
-
-interface ITimeCalculator {
-  calculateStartTime(
-    arrivalTime: string,
-    currentTime: number,
-    technicianStartTime: string
-  ): number;
-  getEndTime(startTime: string, duration: number): string;
-  timeToMinutes(time: string): number;
-  minutesToTime(minutes: number): string;
-}
-
-interface IResourceFinder {
-  findTechnician(sampleType: AnalyseType): TypeTechnician | null;
-  findEquipment(sampleType: AnalyseType): TypeEquipment | null;
-}
+import { data } from "./data/LabData.js";
+import { AnalyseType, Priority, TechnicianSpeciality } from "./type/LabType.js";
+import {
+  TypeSample,
+  TypeTechnician,
+  TypeEquipment,
+  LabData,
+  ISampleSorter,
+  ScheduleItem,
+  ScheduleMetrics,
+  ITimeCalculator,
+} from "./interface/LabInterface.js";
 
 class SamplesOrderPriority implements ISampleSorter {
   sort(samples: TypeSample[]): TypeSample[] {
@@ -156,7 +37,7 @@ class SamplesOrderPriority implements ISampleSorter {
 }
 
 // const testSampleSorter = new SamplesOrderPriority();
-// console.dir(testSampleSorter.sort(dataSimple.samples), {
+// console.dir(testSampleSorter.sort(data.samples), {
 //   depth: null,
 //   colors: true,
 // });
@@ -223,8 +104,8 @@ class ResourceFinder implements IResourceFinder {
 }
 
 // const testResourceFinder = new ResourceFinder(
-//   dataSimple.technicians,
-//   dataSimple.equipment
+//   data.technicians,
+//   data.equipment
 // );
 // console.dir(testResourceFinder.findTechnician("BLOOD"), {
 //   depth: null,
@@ -262,9 +143,9 @@ class ScheduleItemBuilder {
 }
 
 // const testScheduleItemBuilder = new ScheduleItemBuilder(new CalculateTime());
-// const testSample = dataSimple.samples[0];
-// const testTechnician = dataSimple.technicians[0];
-// const testEquipment = dataSimple.equipment[0];
+// const testSample = data.samples[0];
+// const testTechnician = data.technicians[0];
+// const testEquipment = data.equipment[0];
 
 // if (testSample && testTechnician && testEquipment) {
 //   console.dir(
@@ -348,12 +229,12 @@ class LabScheduler {
 }
 
 // const labScheduler = new LabScheduler(
-//   new ResourceFinder(dataSimple.technicians, dataSimple.equipment),
+//   new ResourceFinder(data.technicians, data.equipment),
 //   new SamplesOrderPriority(),
 //   new CalculateTime(),
 //   new ScheduleItemBuilder(new CalculateTime())
 // );
-// console.dir(labScheduler.generateSchedule(dataSimple), {
+// console.dir(labScheduler.generateSchedule(data), {
 //   depth: null,
 //   colors: true,
 // });
@@ -374,8 +255,8 @@ class planifyLab {
   }
 }
 
-// const testPlanifyLab = planifyLab.create(dataSimple);
-// const resultPlanifyLab = testPlanifyLab.generateSchedule(dataSimple);
+// const testPlanifyLab = planifyLab.create(data);
+// const resultPlanifyLab = testPlanifyLab.generateSchedule(data);
 // console.dir(resultPlanifyLab, { depth: null, colors: true });
 
 interface ScheduleResult {
@@ -412,6 +293,6 @@ async function saveSchedule(
 }
 
 // Utilisation
-const scheduler = planifyLab.create(dataSimple);
-const result = scheduler.generateSchedule(dataSimple);
+const scheduler = planifyLab.create(data);
+const result = scheduler.generateSchedule(data);
 saveSchedule(result);
