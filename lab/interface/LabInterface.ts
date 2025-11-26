@@ -1,3 +1,9 @@
+import {
+  AnalyseType,
+  Priority,
+  TechnicianSpeciality,
+} from "../type/LabType.js";
+
 export interface TypeSample {
   id: string;
   type: AnalyseType;
@@ -9,7 +15,7 @@ export interface TypeSample {
 
 export interface TypeTechnician {
   id: string;
-  name: string;
+  name?: string;
   speciality: TechnicianSpeciality;
   startTime: string;
   endTime: string;
@@ -17,7 +23,7 @@ export interface TypeTechnician {
 
 export interface TypeEquipment {
   id: string;
-  name: string;
+  name?: string;
   type: AnalyseType;
   available: boolean;
 }
@@ -42,13 +48,9 @@ export interface ScheduleItem {
 }
 
 export interface ScheduleMetrics {
-  totalTime: string;
+  totalTime: number;
   efficiency: number;
   conflicts: number;
-}
-
-export interface ISampleSorter {
-  sort(samples: TypeSample[]): TypeSample[];
 }
 
 export interface ITimeCalculator {
@@ -65,4 +67,13 @@ export interface ITimeCalculator {
 export interface IResourceFinder {
   findTechnician(sampleType: AnalyseType): TypeTechnician | null;
   findEquipment(sampleType: AnalyseType): TypeEquipment | null;
+}
+
+export interface IMetricsCalculator {
+  calculate(schedule: ScheduleItem[], samples: TypeSample[]): ScheduleMetrics;
+}
+
+export interface ScheduleResult {
+  schedule: ScheduleItem[];
+  metrics: ScheduleMetrics;
 }

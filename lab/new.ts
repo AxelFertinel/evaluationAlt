@@ -217,7 +217,7 @@ class MetricsCalculator implements IMetricsCalculator {
     return {
       totalTime,
       efficiency,
-      conflicts: 0, // Peut être étendu plus tard
+      conflicts: 0, 
     };
   }
 

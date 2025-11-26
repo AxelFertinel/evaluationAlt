@@ -13,7 +13,7 @@ export const data: LabData = {
     {
       id: "S002",
       type: "URINE",
-      priority: "STAT",
+      priority: "URGENT",
       analysisTime: 30,
       arrivalTime: "09:15",
       patientId: "P002",
@@ -30,14 +30,12 @@ export const data: LabData = {
   technicians: [
     {
       id: "T001",
-      name: "Alice",
       speciality: "BLOOD",
       startTime: "08:00",
       endTime: "17:00",
     },
     {
       id: "T002",
-      name: "Bob",
       speciality: "GENERAL",
       startTime: "08:00",
       endTime: "17:00",
@@ -46,13 +44,11 @@ export const data: LabData = {
   equipment: [
     {
       id: "E001",
-      name: "Blood analyzer",
       type: "BLOOD",
       available: true,
     },
     {
       id: "E002",
-      name: "Urine analyzer",
       type: "URINE",
       available: true,
     },

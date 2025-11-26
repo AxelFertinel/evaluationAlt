@@ -9,12 +9,25 @@
       "priority": "URGENT"
     },
     {
+      "sampleId": "S002",
+      "technicianId": "T002",
+      "equipmentId": "E002",
+      "startTime": "10:00",
+      "endTime": "10:30",
+      "priority": "URGENT"
+    },
+    {
       "sampleId": "S003",
       "technicianId": "T001",
       "equipmentId": "E001",
-      "startTime": "10:00",
-      "endTime": "10:45",
+      "startTime": "10:30",
+      "endTime": "11:15",
       "priority": "ROUTINE"
     }
-  ]
+  ],
+  "metrics": {
+    "totalTime": 135,
+    "efficiency": 100,
+    "conflicts": 0
+  }
 }
