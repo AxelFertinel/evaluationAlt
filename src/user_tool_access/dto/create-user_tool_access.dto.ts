@@ -1,29 +1,28 @@
-import { IsNotEmpty, IsNumber, IsDate, IsEnum } from 'class-validator';
+import { IsNotEmpty, IsInt, IsEnum } from 'class-validator';
 import { AccessStatus } from '../../../generated/prisma/enums';
+import { Type } from 'class-transformer';
 export class CreateUserToolAccessDto {
   @IsNotEmpty()
-  @IsNumber()
-  user_id: number;
+  @IsInt()
+  userId: number;
 
   @IsNotEmpty()
-  @IsNumber()
-  tool_id: number;
+  @IsInt()
+  toolId: number;
 
   @IsNotEmpty()
-  granted_at: Date;
+  @Type(() => Date)
+  grantedAt: Date;
 
   @IsNotEmpty()
-  @IsNumber()
-  granted_by: number;
+  @IsInt()
+  grantedBy: number;
 
-  @IsNotEmpty()
-  @IsNumber()
-  @IsDate()
-  revoked_at: Date;
+  @Type(() => Date)
+  revokedAt?: Date;
 
-  @IsNotEmpty()
-  @IsNumber()
-  revoked_by: number;
+  @IsInt()
+  revokedBy?: number;
 
   @IsNotEmpty()
   @IsEnum(AccessStatus)
