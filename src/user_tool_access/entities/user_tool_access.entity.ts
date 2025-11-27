@@ -8,8 +8,7 @@ export class UserToolAccess {
     this.granted_by = CreateUserToolAccessDto.granted_by;
     this.revoked_at = CreateUserToolAccessDto.revoked_at;
     this.revoked_by = CreateUserToolAccessDto.revoked_by;
-
-    status: Status;
+    this.status = CreateUserToolAccessDto.status;
     this.createdAt = new Date();
     this.updatedAt = new Date();
   }
