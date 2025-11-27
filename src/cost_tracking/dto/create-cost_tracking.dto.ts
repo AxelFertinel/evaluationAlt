@@ -1,17 +1,19 @@
-import { IsNotEmpty, IsDate, IsDecimal } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsNotEmpty, IsDecimal, IsInt } from 'class-validator';
 
 export class CreateCostTrackingDto {
   @IsNotEmpty()
-  tool_id: number;
+  @IsInt()
+  toolId: number;
 
   @IsNotEmpty()
-  @IsDate()
-  month_year: Date;
+  @Type(() => Date)
+  monthYear: Date;
 
   @IsNotEmpty()
   @IsDecimal()
-  total_monthlycost: number;
+  totalMonthlyCost: number;
 
   @IsNotEmpty()
-  active_users_count: number;
+  activeUsersCount: number;
 }

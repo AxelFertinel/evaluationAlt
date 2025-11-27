@@ -1,26 +1,38 @@
 import { Injectable } from '@nestjs/common';
 import { CreateCostTrackingDto } from './dto/create-cost_tracking.dto';
 import { UpdateCostTrackingDto } from './dto/update-cost_tracking.dto';
-
+import { PrismaService } from '../../src/prisma.service';
+import { CostTracking } from '../../generated/prisma/client';
 @Injectable()
 export class CostTrackingService {
-  create(createCostTrackingDto: CreateCostTrackingDto) {
-    return 'This action adds a new costTracking';
+  constructor(private prisma: PrismaService) {}
+
+  async create(createCostTrackingDto: CreateCostTrackingDto) {
+    return await this.prisma.costTracking.create({
+      data: createCostTrackingDto,
+    });
   }
 
-  findAll() {
-    return `This action returns all costTracking`;
+  async findAll() {
+    return await this.prisma.costTracking.findMany();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} costTracking`;
+  async findOne(id: number) {
+    return await this.prisma.costTracking.findUnique({
+      where: { id },
+    });
   }
 
-  update(id: number, updateCostTrackingDto: UpdateCostTrackingDto) {
-    return `This action updates a #${id} costTracking`;
+  async update(id: number, updateCostTrackingDto: UpdateCostTrackingDto) {
+    return this.prisma.costTracking.update({
+      where: { id },
+      data: updateCostTrackingDto,
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} costTracking`;
+  async remove(id: number) {
+    return await this.prisma.costTracking.delete({
+      where: { id },
+    });
   }
 }
