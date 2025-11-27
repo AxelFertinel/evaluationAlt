@@ -1,5 +1,5 @@
 import { CreateUserToolAccessDto } from '../dto/create-user_tool_access.dto';
-import { Status } from '../../../generated/prisma/enums';
+import { AccessStatus } from '../../../generated/prisma/enums';
 export class UserToolAccess {
   constructor(CreateUserToolAccessDto: CreateUserToolAccessDto) {
     this.user_id = CreateUserToolAccessDto.user_id;
@@ -27,7 +27,7 @@ export class UserToolAccess {
 
   revoked_by: number;
 
-  status: Status;
+  status: AccessStatus;
 
   createdAt?: Date;
 

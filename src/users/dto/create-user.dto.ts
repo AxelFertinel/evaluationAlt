@@ -1,5 +1,16 @@
-import { IsNotEmpty, IsEmail, IsEnum, IsDate } from 'class-validator';
-import { Role, Department, Status } from '../../../generated/prisma/enums';
+import {
+  IsNotEmpty,
+  IsEmail,
+  IsEnum,
+  IsDate,
+  IsOptional,
+} from 'class-validator';
+import {
+  UserRole,
+  Department,
+  UserStatus,
+} from '../../../generated/prisma/enums';
+import { Type } from 'class-transformer';
 
 export class CreateUserDto {
   @IsNotEmpty()
@@ -14,13 +25,14 @@ export class CreateUserDto {
   department: Department;
 
   @IsNotEmpty()
-  @IsEnum(Role)
-  role: Role;
+  @IsEnum(UserRole)
+  role: UserRole;
 
   @IsNotEmpty()
-  status: Status;
+  status: UserStatus;
 
-  @IsNotEmpty()
   @IsDate()
-  hire_date: Date;
+  @IsOptional()
+  @Type(() => Date)
+  hireDate?: Date;
 }

@@ -1,5 +1,5 @@
 import { IsNotEmpty, IsNumber, IsDate, IsEnum } from 'class-validator';
-import { Status } from '../../../generated/prisma/enums';
+import { AccessStatus } from '../../../generated/prisma/enums';
 export class CreateUserToolAccessDto {
   @IsNotEmpty()
   @IsNumber()
@@ -26,6 +26,6 @@ export class CreateUserToolAccessDto {
   revoked_by: number;
 
   @IsNotEmpty()
-  @IsEnum(Status)
-  status: Status;
+  @IsEnum(AccessStatus)
+  status: AccessStatus;
 }
