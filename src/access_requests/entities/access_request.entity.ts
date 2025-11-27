@@ -10,11 +10,9 @@ export class AccessRequest {
     this.requested_at = CreateAccessRequestDto.requested_at;
     this.processed_at = CreateAccessRequestDto.processed_at;
     this.processed_by = CreateAccessRequestDto.processed_by;
-    this.createdAt = new Date();
-    this.updatedAt = new Date();
   }
 
-  id: number;
+  id?: number;
 
   user_id: number;
 
@@ -30,7 +28,7 @@ export class AccessRequest {
 
   processed_by: number;
 
-  createdAt: Date;
+  createdAt?: Date;
 
-  updatedAt: Date;
+  updatedAt?: Date;
 }

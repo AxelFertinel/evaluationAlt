@@ -5,11 +5,9 @@ export class Category {
     this.name = CreateCategoryDto.name;
     this.description = CreateCategoryDto.description;
     this.color_hex = CreateCategoryDto.color_hex;
-    this.createdAt = new Date();
-    this.updatedAt = new Date();
   }
 
-  id: number;
+  id?: number;
 
   name: string;
 
@@ -17,7 +15,7 @@ export class Category {
 
   color_hex: string;
 
-  createdAt: Date;
+  createdAt?: Date;
 
-  updatedAt: Date;
+  updatedAt?: Date;
 }

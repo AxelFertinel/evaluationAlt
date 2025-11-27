@@ -6,11 +6,9 @@ export class User {
     this.email = createUserDto.email;
     this.departement = createUserDto.departement;
     this.role = createUserDto.role;
-    this.createdAt = new Date();
-    this.updatedAt = new Date();
   }
 
-  id: number;
+  id?: number;
 
   email: string;
 
@@ -20,7 +18,7 @@ export class User {
 
   role: Role;
 
-  createdAt: Date;
+  createdAt?: Date;
 
-  updatedAt: Date;
+  updatedAt?: Date;
 }
