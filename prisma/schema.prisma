@@ -37,7 +37,7 @@ model Tool {
   vendor           String?        @db.VarChar(100)
   websiteUrl       String?        @map("website_url") @db.VarChar(255)
   categoryId       Int            @map("category_id")
-  monthlyCost      Decimal        @map("monthly_cost") @db.Decimal(10, 2)
+  monthlyCost      Float          @map("monthly_cost") 
   activeUsersCount Int            @default(0) @map("active_users_count")
   ownerDepartment  Department     @map("owner_department")
   status           ToolStatus     @default(active)
