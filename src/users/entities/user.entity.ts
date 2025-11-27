@@ -4,7 +4,7 @@ import { Department, Role } from '../../../generated/prisma/enums';
 export class User {
   constructor(createUserDto: CreateUserDto) {
     this.email = createUserDto.email;
-    this.departement = createUserDto.departement;
+    this.department = createUserDto.department;
     this.role = createUserDto.role;
   }
 
@@ -14,7 +14,7 @@ export class User {
 
   password: string;
 
-  departement: Department;
+  department: Department;
 
   role: Role;
 
