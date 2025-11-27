@@ -10,5 +10,149 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
+}
+
+model User {
+  id         Int      @id @default(autoincrement())
+  name       String   @db.VarChar(100)
+  email      String   @unique @db.VarChar(150)
+  department Department
+  role       Role     @default(employee)
+  status     Status   @default(active)
+  hireDate   DateTime? @map("hire_date") @db.Date
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @default(now()) @updatedAt @map("updated_at")
+
+  // Relations
+  toolAccesses         UserToolAccess[] @relation("UserToolAccess")
+  accessRequests       AccessRequest[]  @relation("UserAccessRequests")
+  usageLogs            UsageLog[]
+  grantedAccesses      UserToolAccess[] @relation("GrantedBy")
+  revokedAccesses      UserToolAccess[] @relation("RevokedBy")
+  processedRequests    AccessRequest[]  @relation("ProcessedBy")
+
+  @@map("users")
+}
+
+model Tool {
+  id          Int      @id @default(autoincrement())
+  name        String   @db.VarChar(100)
+  description String?  @db.Text
+  category    String?  @db.VarChar(50)
+  costPerUser Decimal  @map("cost_per_user") @db.Decimal(10, 2)
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at")
+
+  // Relations
+  userAccesses   UserToolAccess[]
+  accessRequests AccessRequest[]
+  usageLogs      UsageLog[]
+  costTracking   CostTracking[]
+
+  @@map("tools")
+}
+
+model UserToolAccess {
+  id        Int       @id @default(autoincrement())
+  userId    Int       @map("user_id")
+  toolId    Int       @map("tool_id")
+  grantedAt DateTime  @default(now()) @map("granted_at")
+  grantedBy Int       @map("granted_by")
+  revokedAt DateTime? @map("revoked_at")
+  revokedBy Int?      @map("revoked_by")
+  status    AccessStatus @default(active)
+
+  // Relations
+  user          User  @relation("UserToolAccess", fields: [userId], references: [id], onDelete: Cascade)
+  tool          Tool  @relation(fields: [toolId], references: [id], onDelete: Cascade)
+  grantedByUser User  @relation("GrantedBy", fields: [grantedBy], references: [id], onDelete: Restrict)
+  revokedByUser User? @relation("RevokedBy", fields: [revokedBy], references: [id], onDelete: SetNull)
+
+  @@unique([userId, toolId, status], name: "unique_user_tool_active")
+  @@map("user_tool_access")
+}
+
+model AccessRequest {
+  id                    Int            @id @default(autoincrement())
+  userId                Int            @map("user_id")
+  toolId                Int            @map("tool_id")
+  businessJustification String         @map("business_justification") @db.Text
+  status                RequestStatus  @default(pending)
+  requestedAt           DateTime       @default(now()) @map("requested_at")
+  processedAt           DateTime?      @map("processed_at")
+  processedBy           Int?           @map("processed_by")
+  processingNotes       String?        @map("processing_notes") @db.Text
+
+  // Relations
+  user           User  @relation("UserAccessRequests", fields: [userId], references: [id], onDelete: Cascade)
+  tool           Tool  @relation(fields: [toolId], references: [id], onDelete: Cascade)
+  processedByUser User? @relation("ProcessedBy", fields: [processedBy], references: [id], onDelete: SetNull)
+
+  @@map("access_requests")
+}
+
+model UsageLog {
+  id            Int      @id @default(autoincrement())
+  userId        Int      @map("user_id")
+  toolId        Int      @map("tool_id")
+  sessionDate   DateTime @map("session_date") @db.Date
+  usageMinutes  Int      @default(0) @map("usage_minutes")
+  actionsCount  Int      @default(0) @map("actions_count")
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tool Tool @relation(fields: [toolId], references: [id], onDelete: Cascade)
+
+  @@map("usage_logs")
+}
+
+model CostTracking {
+  id               Int      @id @default(autoincrement())
+  toolId           Int      @map("tool_id")
+  monthYear        DateTime @map("month_year") @db.Date
+  totalMonthlyCost Decimal  @map("total_monthly_cost") @db.Decimal(10, 2)
+  activeUsersCount Int      @default(0) @map("active_users_count")
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  // Relations
+  tool Tool @relation(fields: [toolId], references: [id], onDelete: Cascade)
+
+  @@unique([toolId, monthYear], name: "unique_tool_month")
+  @@map("cost_tracking")
+}
+
+// Enums
+enum Department {
+  Engineering
+  Sales
+  Marketing
+  HR
+  Finance
+  Operations
+  Design
+}
+
+enum Role {
+  employee
+  manager
+  admin
+}
+
+enum Status {
+  active
+  inactive
+}
+
+enum AccessStatus {
+  active
+  revoked
+}
+
+enum RequestStatus {
+  pending
+  approved
+  rejected
 }
