@@ -1,17 +1,27 @@
-import { IsNotEmpty, IsEnum, IsInt, IsOptional } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsEnum,
+  IsInt,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import { Department, ToolStatus } from '../../../generated/prisma/enums';
 export class CreateToolDto {
   @IsNotEmpty()
+  @IsString()
   name: string;
 
+  @IsString()
   @IsOptional()
-  description: string;
+  description?: string;
 
+  @IsString()
   @IsOptional()
-  vendor: string;
+  vendor?: string;
 
+  @IsString()
   @IsOptional()
-  websiteUrl: string;
+  websiteUrl?: string;
 
   @IsNotEmpty()
   @IsInt()

@@ -15,5 +15,6 @@ export class CreateCostTrackingDto {
   totalMonthlyCost: number;
 
   @IsNotEmpty()
+  @IsInt()
   activeUsersCount: number;
 }

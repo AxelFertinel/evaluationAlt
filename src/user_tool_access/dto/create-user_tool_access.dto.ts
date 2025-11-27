@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsInt, IsEnum } from 'class-validator';
+import { IsNotEmpty, IsInt, IsEnum, IsOptional } from 'class-validator';
 import { AccessStatus } from '../../../generated/prisma/enums';
 import { Type } from 'class-transformer';
 export class CreateUserToolAccessDto {
@@ -18,9 +18,11 @@ export class CreateUserToolAccessDto {
   @IsInt()
   grantedBy: number;
 
+  @IsOptional()
   @Type(() => Date)
   revokedAt?: Date;
-
+  
+  @IsOptional()
   @IsInt()
   revokedBy?: number;
 

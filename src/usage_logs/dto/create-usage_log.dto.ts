@@ -1,23 +1,24 @@
-import { IsNotEmpty, IsDate, IsNumber } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsNotEmpty, IsDate, IsInt } from 'class-validator';
 
 export class CreateUsageLogDto {
   @IsNotEmpty()
-  @IsNumber()
+  @IsInt()
   userId: number;
 
   @IsNotEmpty()
-  @IsNumber()
+  @IsInt()
   toolId: number;
 
   @IsNotEmpty()
-  @IsDate()
+  @Type(() => Date)
   sessionDate: Date;
 
   @IsNotEmpty()
-  @IsNumber()
+  @IsInt()
   usageMinutes: number;
 
   @IsNotEmpty()
-  @IsNumber()
+  @IsInt()
   actionsCount: number;
 }
