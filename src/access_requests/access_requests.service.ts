@@ -1,26 +1,61 @@
 import { Injectable } from '@nestjs/common';
 import { CreateAccessRequestDto } from './dto/create-access_request.dto';
 import { UpdateAccessRequestDto } from './dto/update-access_request.dto';
-
+import { PrismaService } from '../../src/prisma.service';
+import { AccessRequest } from '../../generated/prisma/client';
 @Injectable()
 export class AccessRequestsService {
-  create(createAccessRequestDto: CreateAccessRequestDto) {
-    return 'This action adds a new accessRequest';
+  constructor(private prisma: PrismaService) {}
+
+  async create(
+    createAccessRequestDto: CreateAccessRequestDto,
+  ): Promise<AccessRequest> {
+    return await this.prisma.accessRequest.create({
+      data: createAccessRequestDto,
+      include: {
+        user: true,
+        tool: true,
+        processedByUser: true,
+      },
+    });
   }
 
-  findAll() {
-    return `This action returns all accessRequests`;
+  async findAll() {
+    return await this.prisma.accessRequest.findMany({
+      include: {
+        user: true,
+        tool: true,
+        processedByUser: true,
+      },
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} accessRequest`;
+  async findOne(id: number) {
+    return await this.prisma.accessRequest.findUnique({
+      where: { id },
+      include: {
+        user: true,
+        tool: true,
+        processedByUser: true,
+      },
+    });
   }
 
-  update(id: number, updateAccessRequestDto: UpdateAccessRequestDto) {
-    return `This action updates a #${id} accessRequest`;
+  async update(id: number, updateAccessRequestDto: UpdateAccessRequestDto) {
+    return await this.prisma.accessRequest.update({
+      where: { id },
+      data: updateAccessRequestDto,
+      include: {
+        user: true,
+        tool: true,
+        processedByUser: true,
+      },
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} accessRequest`;
+  async remove(id: number) {
+    return await this.prisma.accessRequest.delete({
+      where: { id },
+    });
   }
 }

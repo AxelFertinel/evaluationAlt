@@ -3,30 +3,30 @@ import { RequestStatus } from '../../../generated/prisma/enums';
 
 export class AccessRequest {
   constructor(CreateAccessRequestDto: CreateAccessRequestDto) {
-    this.user_id = CreateAccessRequestDto.user_id;
-    this.tool_id = CreateAccessRequestDto.tool_id;
-    this.business_justification = CreateAccessRequestDto.business_justification;
+    this.userId = CreateAccessRequestDto.userId;
+    this.toolId = CreateAccessRequestDto.toolId;
+    this.businessJustification = CreateAccessRequestDto.businessJustification;
     this.status = CreateAccessRequestDto.status;
-    this.requested_at = CreateAccessRequestDto.requested_at;
-    this.processed_at = CreateAccessRequestDto.processed_at;
-    this.processed_by = CreateAccessRequestDto.processed_by;
+    this.requestedAt = CreateAccessRequestDto.requestedAt;
+    this.processedAt = CreateAccessRequestDto.processedAt;
+    this.processedBy = CreateAccessRequestDto.processedBy;
   }
 
   id?: number;
 
-  user_id: number;
+  userId: number;
 
-  tool_id: number;
+  toolId: number;
 
-  business_justification: string;
+  businessJustification: string;
 
-  status: RequestStatus;
+  status?: RequestStatus;
 
-  requested_at: Date;
+  requestedAt?: Date;
 
-  processed_at: Date;
+  processedAt?: Date;
 
-  processed_by: number;
+  processedBy?: number;
 
   createdAt?: Date;
 

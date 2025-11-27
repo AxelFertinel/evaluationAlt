@@ -1,31 +1,43 @@
-import { IsNotEmpty, IsEnum, IsDate } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsEnum,
+  IsInt,
+  IsString,
+  IsOptional,
+} from 'class-validator';
+import { Type } from 'class-transformer';
 import { RequestStatus } from '../../../generated/prisma/enums';
 
 export class CreateAccessRequestDto {
+  @IsInt()
   @IsNotEmpty()
-  user_id: number;
+  userId: number;
 
+  @IsInt()
   @IsNotEmpty()
-  tool_id: number;
+  toolId: number;
 
+  @IsString()
   @IsNotEmpty()
-  business_justification: string;
+  businessJustification: string;
 
-  @IsNotEmpty()
   @IsEnum(RequestStatus)
-  status: RequestStatus;
+  @IsOptional()
+  status?: RequestStatus;
 
-  @IsDate()
-  @IsNotEmpty()
-  requested_at: Date;
+  @IsOptional()
+  @Type(() => Date)
+  requestedAt?: Date;
 
-  @IsDate()
-  @IsNotEmpty()
-  processed_at: Date;
+  @IsOptional()
+  @Type(() => Date)
+  processedAt?: Date;
 
-  @IsNotEmpty()
-  processed_by: number;
+  @IsInt()
+  @IsOptional()
+  processedBy?: number;
 
-  @IsNotEmpty()
-  processing_notes: string;
+  @IsString()
+  @IsOptional()
+  processingNotes?: string;
 }
