@@ -1,26 +1,38 @@
 import { Injectable } from '@nestjs/common';
 import { CreateToolDto } from './dto/create-tool.dto';
 import { UpdateToolDto } from './dto/update-tool.dto';
-
+import { PrismaService } from '../../src/prisma.service';
+import { Tool } from '../../generated/prisma/client';
 @Injectable()
 export class ToolsService {
+  constructor(private prisma: PrismaService) {}
+
   create(createToolDto: CreateToolDto) {
-    return 'This action adds a new tool';
+    return this.prisma.tool.create({
+      data: createToolDto,
+    });
   }
 
   findAll() {
-    return `This action returns all tools`;
+    return this.prisma.tool.findMany();
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} tool`;
+    return this.prisma.tool.findUnique({
+      where: { id },
+    });
   }
 
   update(id: number, updateToolDto: UpdateToolDto) {
-    return `This action updates a #${id} tool`;
+    return this.prisma.tool.update({
+      where: { id },
+      data: updateToolDto,
+    });
   }
 
   remove(id: number) {
-    return `This action removes a #${id} tool`;
+    return this.prisma.tool.delete({
+      where: { id },
+    });
   }
 }

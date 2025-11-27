@@ -1,35 +1,35 @@
-import { IsNotEmpty, IsEnum, IsNumber } from 'class-validator';
-import { Department, RequestStatus } from '../../../generated/prisma/enums';
+import { IsNotEmpty, IsEnum, IsInt, IsOptional } from 'class-validator';
+import { Department, ToolStatus } from '../../../generated/prisma/enums';
 export class CreateToolDto {
   @IsNotEmpty()
   name: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   description: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   vendor: string;
 
-  @IsNotEmpty()
-  website_url: string;
+  @IsOptional()
+  websiteUrl: string;
 
   @IsNotEmpty()
-  @IsNumber()
-  category_id: number;
+  @IsInt()
+  categoryId: number;
 
   @IsNotEmpty()
-  @IsNumber()
-  monthly_cost: number;
+  @IsInt()
+  monthlyCost: number;
 
   @IsNotEmpty()
-  @IsNumber()
-  active_users_count: number;
+  @IsInt()
+  activeUsersCount: number;
 
   @IsNotEmpty()
   @IsEnum(Department)
-  owner_department: Department;
+  ownerDepartment: Department;
 
   @IsNotEmpty()
-  @IsEnum(RequestStatus)
-  status: RequestStatus;
+  @IsEnum(ToolStatus)
+  status: ToolStatus;
 }

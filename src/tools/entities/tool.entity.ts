@@ -1,16 +1,16 @@
 import { CreateToolDto } from '../dto/create-tool.dto';
-import { Department, RequestStatus } from '../../../generated/prisma/enums';
+import { Department, ToolStatus } from '../../../generated/prisma/enums';
 
 export class Tool {
   constructor(CreateToolDto: CreateToolDto) {
     this.name = CreateToolDto.name;
     this.description = CreateToolDto.description;
     this.vendor = CreateToolDto.vendor;
-    this.website_url = CreateToolDto.website_url;
-    this.category_id = CreateToolDto.category_id;
-    this.monthly_cost = CreateToolDto.monthly_cost;
-    this.active_users_count = CreateToolDto.active_users_count;
-    this.owner_department = CreateToolDto.owner_department;
+    this.websiteUrl = CreateToolDto.websiteUrl;
+    this.categoryId = CreateToolDto.categoryId;
+    this.monthlyCost = CreateToolDto.monthlyCost;
+    this.activeUsersCount = CreateToolDto.activeUsersCount;
+    this.ownerDepartment = CreateToolDto.ownerDepartment;
     this.status = CreateToolDto.status;
     this.createdAt = new Date();
     this.updatedAt = new Date();
@@ -20,21 +20,21 @@ export class Tool {
 
   name: string;
 
-  description: string;
+  description?: string;
 
-  vendor: string;
+  vendor?: string;
 
-  website_url: string;
+  websiteUrl?: string;
 
-  category_id: number;
+  categoryId: number;
 
-  monthly_cost: number;
+  monthlyCost: number;
 
-  active_users_count: number;
+  activeUsersCount: number;
 
-  owner_department: Department;
+  ownerDepartment: Department;
 
-  status: RequestStatus;
+  status: ToolStatus;
 
   createdAt?: Date;
 
