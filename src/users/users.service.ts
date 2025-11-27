@@ -13,24 +13,24 @@ export class UsersService {
     });
   }
 
-  async findAll() {
+  async findAll(): Promise<User[]> {
     return await this.prisma.user.findMany();
   }
 
-  async findOne(id: number) {
+  async findOne(id: number): Promise<User | null> {
     return await this.prisma.user.findUnique({
       where: { id },
     });
   }
 
-  async update(id: number, updateUserDto: UpdateUserDto) {
+  async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
     return await this.prisma.user.update({
       where: { id },
       data: updateUserDto,
     });
   }
 
-  remove(id: number) {
+  remove(id: number): Promise<User> {
     return this.prisma.user.delete({
       where: { id },
     });
