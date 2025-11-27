@@ -3,21 +3,21 @@ import { IsNotEmpty, IsDate, IsNumber } from 'class-validator';
 export class CreateUsageLogDto {
   @IsNotEmpty()
   @IsNumber()
-  user_id: number;
+  userId: number;
 
   @IsNotEmpty()
   @IsNumber()
-  tool_id: number;
+  toolId: number;
 
   @IsNotEmpty()
   @IsDate()
-  session_date: Date;
+  sessionDate: Date;
 
   @IsNotEmpty()
   @IsNumber()
-  usage_minutes: number;
+  usageMinutes: number;
 
   @IsNotEmpty()
   @IsNumber()
-  actions_count: number;
+  actionsCount: number;
 }

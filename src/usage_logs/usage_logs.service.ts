@@ -1,26 +1,35 @@
 import { Injectable } from '@nestjs/common';
 import { CreateUsageLogDto } from './dto/create-usage_log.dto';
 import { UpdateUsageLogDto } from './dto/update-usage_log.dto';
+import { PrismaService } from '../../src/prisma.service';
+import { UsageLog } from '../../generated/prisma/client';
 
 @Injectable()
 export class UsageLogsService {
-  create(createUsageLogDto: CreateUsageLogDto) {
-    return 'This action adds a new usageLog';
+  constructor(private prisma: PrismaService) {}
+
+  async create(createUsageLogDto: CreateUsageLogDto): Promise<UsageLog> {
+    return await this.prisma.usageLog.create({
+      data: createUsageLogDto,
+    });
   }
 
-  findAll() {
-    return `This action returns all usageLogs`;
+  async findAll() {
+    return await this.prisma.usageLog.findMany();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} usageLog`;
+  async findOne(id: number) {
+    return await this.prisma.usageLog.findUnique({ where: { id } });
   }
 
-  update(id: number, updateUsageLogDto: UpdateUsageLogDto) {
-    return `This action updates a #${id} usageLog`;
+  async update(id: number, updateUsageLogDto: UpdateUsageLogDto) {
+    return await this.prisma.usageLog.update({
+      where: { id },
+      data: updateUsageLogDto,
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} usageLog`;
+  async remove(id: number) {
+    return await this.prisma.usageLog.delete({ where: { id } });
   }
 }
