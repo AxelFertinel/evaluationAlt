@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateToolDto } from './dto/create-tool.dto';
 import { UpdateToolDto } from './dto/update-tool.dto';
 import { PrismaService } from '../../src/prisma.service';
@@ -83,10 +83,52 @@ export class ToolsService {
     };
   }
 
-  findOne(id: number) {
-    return this.prisma.tool.findUnique({
-      where: { id },
-    });
+  async findOne(id: number) {
+    const [tool, monthlyCost, usageLogs] = await Promise.all([
+      this.prisma.tool.findUnique({
+        where: { id },
+      }),
+      this.prisma.costTracking.findUnique({
+        where: { id },
+        select: { totalMonthlyCost: true },
+      }),
+      this.prisma.usageLog.findMany({
+        where: {
+          toolId: id,
+          sessionDate: {
+            gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+          },
+        },
+      }),
+    ]);
+    if (!tool) {
+      throw new NotFoundException(`Tool with ID ${id} not found`);
+    }
+    const usageMetrics = this.calculateUsageMetrics(usageLogs);
+
+    return {
+      ...tool,
+      total_monthly_cost: monthlyCost?.totalMonthlyCost ?? 0,
+      usage_metrics: usageMetrics,
+    };
+  }
+
+  private calculateUsageMetrics(usageLogs: any[]) {
+    const totalSessions = usageLogs.length;
+    const totalMinutes = usageLogs.reduce(
+      (sum, log) => sum + (log.usageMinutes || 0),
+      0,
+    );
+
+    const avgSessionMinutes =
+      totalSessions > 0 ? Math.round(totalMinutes / totalSessions) : 0;
+
+    return {
+      last_30_days: {
+        total_sessions: totalSessions,
+        avg_session_minutes: avgSessionMinutes,
+      },
+    };
   }
 
   update(id: number, updateToolDto: UpdateToolDto) {

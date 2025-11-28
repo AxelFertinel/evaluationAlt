@@ -135,7 +135,7 @@ model CostTracking {
   id               Int      @id @default(autoincrement())
   toolId           Int      @map("tool_id")
   monthYear        DateTime @map("month_year") @db.Date
-  totalMonthlyCost Decimal  @map("total_monthly_cost") @db.Decimal(10, 2)
+  totalMonthlyCost Float  @map("total_monthly_cost") 
   activeUsersCount Int      @default(0) @map("active_users_count")
   createdAt        DateTime @default(now()) @map("created_at")
 
