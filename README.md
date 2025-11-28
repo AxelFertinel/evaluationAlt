@@ -1,4 +1,3 @@
-
 # 🗄️ Internal Tools Database - Quick Setup
 
 Ready-to-use database environment for API development tests.
@@ -105,6 +104,7 @@ docker-compose --profile all up -d
 ```bash
 $ npm install
 ```
+
 # Prisma setup
 
 ```bash
@@ -126,3 +126,6 @@ $ npm run start:dev
 $ npm run start:prod
 ```
 
+# Documentation API swagger
+
+http://localhost:3000/api
