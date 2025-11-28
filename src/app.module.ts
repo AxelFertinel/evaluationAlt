@@ -8,7 +8,7 @@ import { CostTrackingModule } from './cost_tracking/cost_tracking.module';
 import { ToolsModule } from './tools/tools.module';
 import { UsageLogsModule } from './usage_logs/usage_logs.module';
 import { UserToolAccessModule } from './user_tool_access/user_tool_access.module';
-import { AnalitycsModule } from './analitycs/analitycs.module';
+import { AnalyticsModule } from './analytics/analytics.module';
 
 @Module({
   imports: [
@@ -19,7 +19,7 @@ import { AnalitycsModule } from './analitycs/analitycs.module';
     ToolsModule,
     UsageLogsModule,
     UserToolAccessModule,
-    AnalitycsModule,
+    AnalyticsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
