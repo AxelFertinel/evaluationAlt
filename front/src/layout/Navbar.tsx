@@ -8,7 +8,9 @@ const Navbar = () => {
   return (
     <nav className="flex items-center justify-between flex-wrap bg-white p-6 border-b-1">
       <div className="flex items-center flex-shrink-0  mr-6">
-        <Zap />
+        <div className="bg-tool p-1.5 rounded-lg text-white mr-1">
+          <Zap />
+        </div>
         <span className="font-semibold text-xl tracking-tight">TechCorp</span>
       </div>
 
