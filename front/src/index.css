@@ -39,6 +39,13 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  --color-budget: #00b180;
+  --color-tool: #566fff;
+  --color-department: #fa5534;
+  --color-user: #f3227d;
+  --color-active: #00b180;
+  --color-expired: #fd9000;
+  --color-unused: #f92837;
 }
 
 :root {
@@ -120,5 +127,5 @@
 }
 
 .container {
-  @apply max-w-[1400px] mx-auto;
+  @apply max-w-[1400px] mx-auto p-2;
 }
