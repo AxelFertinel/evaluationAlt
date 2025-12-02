@@ -19,6 +19,7 @@ const Home = () => {
           </p>
         </div>
         <div className="mb-5  grid grid-cols-1 md:grid-cols-4 gap-6">
+          {/* Card monthly budget */}
           <div className="rounded-lg border bg-card  shadow-sm flex flex-col h-full p-5">
             <div className="flex justify-between  mb-5">
               <p>Monthly Budget</p>
@@ -34,9 +35,10 @@ const Home = () => {
               <p className="bg-budget text-sm  badge">+12%</p>
             </div>
           </div>
+          {/* Card Active tool */}
           <div className="rounded-lg border bg-card  shadow-sm flex flex-col h-full p-5">
             <div className="flex justify-between  mb-5">
-              <p className="text-xl font-bold">Active Tools</p>
+              <p>Active Tools</p>
               <div className="p-1.5 bg-tool rounded-lg">
                 <Wrench color="white" size={20} />
               </div>
@@ -46,6 +48,7 @@ const Home = () => {
               <p className="bg-tool text-sm  badge">+8%</p>
             </div>
           </div>
+          {/* Card Departments*/}
           <div className="rounded-lg border bg-card  shadow-sm flex flex-col h-full p-5">
             <div className="flex justify-between  mb-5">
               <p>Departments</p>
@@ -58,6 +61,7 @@ const Home = () => {
               <p className="bg-department text-sm  badge">+2</p>
             </div>
           </div>
+          {/* Car Cost/user */}
           <div className="rounded-lg border bg-card  shadow-sm flex flex-col h-full p-5">
             <div className="flex justify-between  mb-5">
               <p>Cost/User</p>
@@ -71,7 +75,7 @@ const Home = () => {
             </div>
           </div>
         </div>
-
+        {/* Tableau recent Tools */}
         <div className="p-5 bg-card text-card-foreground rounded-lg shadow-sm ">
           <div className="flex justify-between">
             <h2>Recent Tools</h2>
