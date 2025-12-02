@@ -27,20 +27,23 @@ const Home = () => {
               </div>
             </div>
             <div>
-              <p>€28,750/€30k</p>
-              <p>+ 12%</p>
+              <p className="text-xl font-bold">
+                €28,750/<span className="text-gray-500">€30k</span>
+              </p>
+
+              <p className="bg-budget text-sm  badge">+12%</p>
             </div>
           </div>
           <div className="rounded-lg border bg-card  shadow-sm flex flex-col h-full p-5">
             <div className="flex justify-between  mb-5">
-              <p>Active Tools</p>
+              <p className="text-xl font-bold">Active Tools</p>
               <div className="p-1.5 bg-tool rounded-lg">
                 <Wrench color="white" size={20} />
               </div>
             </div>
             <div>
-              <p>147</p>
-              <p>+8%</p>
+              <p className="text-xl font-bold">147</p>
+              <p className="bg-tool text-sm  badge">+8%</p>
             </div>
           </div>
           <div className="rounded-lg border bg-card  shadow-sm flex flex-col h-full p-5">
@@ -51,8 +54,8 @@ const Home = () => {
               </div>
             </div>
             <div>
-              <p>8</p>
-              <p>+2</p>
+              <p className="text-xl font-bold">8</p>
+              <p className="bg-department text-sm  badge">+2</p>
             </div>
           </div>
           <div className="rounded-lg border bg-card  shadow-sm flex flex-col h-full p-5">
@@ -63,8 +66,8 @@ const Home = () => {
               </div>
             </div>
             <div>
-              <p>€156</p>
-              <p>-€12</p>
+              <p className="text-xl font-bold">€156</p>
+              <p className="bg-user text-sm  badge">-€12</p>
             </div>
           </div>
         </div>
