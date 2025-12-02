@@ -34,7 +34,6 @@ const Home = () => {
           <h1>Header</h1>
           <p>
             Monitoring and manage your organization's software tool and expenses
-            test
           </p>
         </div>
         <div className="mb-5  grid grid-cols-1 md:grid-cols-4 gap-6">
