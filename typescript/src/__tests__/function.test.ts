@@ -1,0 +1,94 @@
+import {
+  parsingData,
+  loyaltyPoints,
+  totalsByCustomer,
+  promoCodeDiscount,
+} from "../function";
+
+describe("parsingData", () => {
+  it("parses data file into an array of objects", () => {
+    const dataFilePath = "orders.csv";
+    const result = parsingData(dataFilePath);
+    expect(Array.isArray(result)).toBe(true);
+    expect(result.length).toBeGreaterThan(0);
+  });
+});
+
+describe("loyaltyPoints", () => {
+  it("calculates loyalty points correctly", () => {
+    const orders = [
+      {
+        id: "O005",
+        customer_id: "C002",
+        product_id: "P007",
+        qty: "3",
+        unit_price: "8.99",
+        date: "2025-01-16",
+        promo_code: "",
+        time: "09:15",
+      },
+    ] as any[];
+    const points = loyaltyPoints(orders);
+    expect(points).toBeCloseTo(0.2697, 4);
+  });
+});
+
+describe("totalsByCustomer", () => {
+  it("calculates totals by customer correctly", () => {
+    const orders = [
+      {
+        id: "O005",
+        customer_id: "C002",
+        product_id: "P007",
+        qty: "3",
+        unit_price: "10",
+        date: "2025-01-16",
+        promo_code: "BULK15",
+        time: "09:15",
+      },
+      {
+        id: "O006",
+        customer_id: "C002",
+        product_id: "P007",
+        qty: "3",
+        unit_price: "8",
+        date: "2025-01-16",
+        promo_code: "WEEKEND5",
+        time: "09:15",
+      },
+      {
+        id: "O007",
+        customer_id: "C003",
+        product_id: "P007",
+        qty: "3",
+        unit_price: "8.99",
+        date: "2025-01-16",
+        promo_code: "PREMIUM10",
+        time: "09:15",
+      },
+    ] as any[];
+    const totals = totalsByCustomer(orders);
+    expect(totals["C002"]).toBeCloseTo(54, 4);
+    expect(totals["C003"]).toBeCloseTo(26.97, 4);
+  });
+});
+
+describe("promoCodeDiscount", () => {
+  it("calculates promo code discount correctly", () => {
+    const order = [
+      {
+        id: "O006",
+        customer_id: "C003",
+        product_id: "P007",
+        qty: "1",
+        unit_price: "10",
+        date: "2025-01-16",
+        promo_code: "BULK15",
+        time: "09:15",
+      },
+    ] as any[];
+
+    const discount = promoCodeDiscount(order);
+    expect(discount).toBeCloseTo(0.15, 4);
+  });
+});
