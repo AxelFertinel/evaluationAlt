@@ -1,6 +1,7 @@
 import { Routes, Route } from "react-router";
 import "./App.css";
-import Home from "./pages/home";
+
+import Home from "./pages/Home";
 import Tools from "./pages/tools/Tools";
 import Analytics from "./pages/analytics/Analytics";
 import Settings from "./pages/settings/Settings";
