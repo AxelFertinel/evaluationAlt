@@ -55,16 +55,12 @@ const Navbar = () => {
             Settings
           </Link>
         </div>
-        <div className="flex mt-1 gap-3">
+        <div className="flex mt-1 gap-4">
           <div className="border rounded-lg p-1 flex">
-            <div className="">
-              <Search size={18} color="gray" className="" />
+            <div className="inline-flex items-center justify-center">
+              <Search size={18} color="gray" />
             </div>
-            <input
-              data-slot="input-group-control"
-              className=""
-              placeholder="Search tools..."
-            />
+            <input className="" placeholder="Search tools..." />
           </div>
           <Moon size={25} />
           <Bell size={25} />
