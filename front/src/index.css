@@ -136,6 +136,13 @@
   @apply inline-flex items-center justify-center rounded-full px-2 py-0.5  text-white;
 }
 
+h1 {
+  @apply text-2xl font-bold;
+}
+h2 {
+  @apply text-xl font-bold;
+}
+
 .bg-active {
   @apply bg-[#00b180];
 }

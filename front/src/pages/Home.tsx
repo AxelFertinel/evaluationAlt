@@ -14,7 +14,9 @@ const Home = () => {
       <div className="container">
         <div className="mb-5 mt-5 ">
           <h1>Header</h1>
-          <p>Monitoring</p>
+          <p>
+            Monitoring and manage your organization's software tool and expenses
+          </p>
         </div>
         <div className="mb-5  grid grid-cols-1 md:grid-cols-4 gap-6">
           <div className="rounded-lg border bg-card  shadow-sm flex flex-col h-full p-5">
