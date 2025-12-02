@@ -43,9 +43,11 @@
   --color-tool: #566fff;
   --color-department: #fa5534;
   --color-user: #f3227d;
+
+  /* 
   --color-active: #00b180;
   --color-expired: #fd9000;
-  --color-unused: #f92837;
+  --color-unused: #f92837; */
 }
 
 :root {
@@ -132,4 +134,14 @@
 
 .badge {
   @apply inline-flex items-center justify-center rounded-full px-2 py-0.5  text-white;
+}
+
+.bg-active {
+  @apply bg-[#00b180];
+}
+.bg-expired {
+  @apply bg-[#fd9000];
+}
+.bg-unused {
+  @apply bg-[#f92837];
 }
