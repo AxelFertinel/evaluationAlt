@@ -6,10 +6,12 @@ import Tools from "./pages/tools/Tools";
 import Analytics from "./pages/analytics/Analytics";
 import Settings from "./pages/settings/Settings";
 import Profil from "./pages/profil/Profil";
+import Navbar from "./layout/Navbar";
 
 function App() {
   return (
     <>
+      <Navbar />
       <Routes>
         <Route index path="/" element={<Home />} />
         <Route index path="/tools" element={<Tools />} />
