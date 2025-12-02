@@ -6,7 +6,6 @@ import { StatCard } from "@/components/statCard";
 const Home = () => {
   const { tools } = useTools();
 
-  // --- Calculs dérivés ---
   const totalMonthlyCost = tools.reduce(
     (sum, tool) => sum + (tool.monthly_cost || 0),
     0
@@ -16,9 +15,15 @@ const Home = () => {
     (tool) => tool.status === "active"
   ).length;
 
-  const uniqueDepartmentsCount = new Set(
-    tools.map((tool) => tool.owner_department)
-  ).size;
+  const departmentsCount = new Set(tools.map((tool) => tool.owner_department))
+    .size;
+
+  const totalUser = tools.reduce(
+    (sum, tool) => sum + (tool.active_users_count || 0),
+    0
+  );
+
+  const costUser = (totalMonthlyCost / totalUser).toFixed(2);
 
   return (
     <div className="container">
@@ -51,7 +56,7 @@ const Home = () => {
         {/* Departments */}
         <StatCard
           title="Departments"
-          value={uniqueDepartmentsCount}
+          value={departmentsCount}
           icon={<Newspaper color="white" size={20} />}
           badge="+2"
           color="bg-department"
@@ -60,7 +65,7 @@ const Home = () => {
         {/* Cost/User */}
         <StatCard
           title="Cost/User"
-          value="€156"
+          value={`€${costUser}`}
           icon={<Users color="white" size={20} />}
           badge="-€12"
           color="bg-user"

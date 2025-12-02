@@ -9,10 +9,3 @@ export type Tool = {
   status: "active" | "unused" | "expiring";
   updated_at: string;
 };
-
-export interface Tools {
-  owner_department: any;
-  status: string;
-  monthly_cost: number;
-  tools?: Tool[];
-}

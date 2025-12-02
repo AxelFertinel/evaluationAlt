@@ -7,9 +7,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import type { Tools } from "@/interfaces/tools";
+import type { Tool } from "@/interfaces/tools";
 
-const ToolsTable = ({ tools }: Tools) => {
+interface ToolsTableProps {
+  tools: Tool[] | null;
+}
+
+const ToolsTable = ({ tools }: ToolsTableProps) => {
   return (
     <Table>
       <TableHeader>
@@ -23,7 +27,7 @@ const ToolsTable = ({ tools }: Tools) => {
       </TableHeader>
       <TableBody>
         {tools && tools.length > 0 ? (
-          tools.map((tool: any) => (
+          tools.map((tool: Tool) => (
             <TableRow key={tool.name + tool.updated_at}>
               <TableCell>{tool.name}</TableCell>
               <TableCell>

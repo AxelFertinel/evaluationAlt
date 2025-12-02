@@ -1,10 +1,10 @@
 // hooks/useTools.ts
 import { useEffect, useState } from "react";
 import { getTools as apiGetTools } from "@/api/tools";
-import type { Tools } from "@/interfaces/tools";
+import type { Tool } from "@/interfaces/tools";
 
 export const useTools = () => {
-  const [tools, setTools] = useState<Tools[]>([]);
+  const [tools, setTools] = useState<Tool[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
