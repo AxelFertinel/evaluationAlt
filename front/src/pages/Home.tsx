@@ -33,7 +33,7 @@ const Home = () => {
         {/* Monthly Budget */}
         <StatCard
           title="Monthly Budget"
-          value={`${totalMonthlyCost}€`}
+          value={`€${totalMonthlyCost}`}
           icon={<TrendingUp color="white" size={20} />}
           badge="+12%"
           color="bg-budget"
