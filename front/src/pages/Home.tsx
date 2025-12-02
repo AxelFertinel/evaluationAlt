@@ -1,3 +1,4 @@
+import Badge from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -78,7 +79,7 @@ const Home = () => {
                 <TableHead>Departement</TableHead>
                 <TableHead>Users</TableHead>
                 <TableHead>Monthly Cost</TableHead>
-                <TableHead>Status</TableHead>
+                <TableHead>{Badge("Active", "active")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -87,21 +88,21 @@ const Home = () => {
                 <TableCell>Communication</TableCell>
                 <TableCell>245</TableCell>
                 <TableCell>$250.00</TableCell>
-                <TableCell>Active</TableCell>
+                <TableCell>{Badge("Expired", "expired")}</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>Slack</TableCell>
                 <TableCell>Communication</TableCell>
                 <TableCell>245</TableCell>
                 <TableCell>$250.00</TableCell>
-                <TableCell>Active</TableCell>
+                <TableCell>{Badge("Unused", "unused")}</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>Slack</TableCell>
                 <TableCell>Communication</TableCell>
                 <TableCell>245</TableCell>
                 <TableCell>$250.00</TableCell>
-                <TableCell>Active</TableCell>
+                <TableCell>{Badge("Active", "active")}</TableCell>
               </TableRow>
             </TableBody>
           </Table>

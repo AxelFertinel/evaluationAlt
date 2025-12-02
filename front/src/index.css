@@ -129,3 +129,7 @@
 .container {
   @apply max-w-[1400px] mx-auto p-2;
 }
+
+.badge {
+  @apply inline-flex items-center justify-center rounded-full px-2 py-0.5  text-white;
+}
