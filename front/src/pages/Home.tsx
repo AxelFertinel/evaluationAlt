@@ -97,7 +97,6 @@ const Home = () => {
         <div className="p-5 bg-card text-card-foreground rounded-lg shadow-sm ">
           <div className="flex justify-between">
             <h2>Recent Tools</h2>
-            <p>last 30 days</p>
           </div>
           <Table>
             <TableHeader>
