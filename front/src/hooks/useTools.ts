@@ -1,25 +1,37 @@
 // hooks/useTools.ts
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { getTools as apiGetTools } from "@/api/tools";
 import type { Tool } from "@/interfaces/tools";
 
-export const useTools = () => {
+interface UseToolsReturn {
+  tools: Tool[];
+  loading: boolean;
+  error: Error | null;
+}
+
+export const useTools = (): UseToolsReturn => {
   const [tools, setTools] = useState<Tool[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
 
-  useEffect(() => {
-    const fetchTools = async () => {
-      try {
-        const response = await apiGetTools();
-        setTools(response ?? []);
-      } catch (e) {
-        console.error(e);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchTools();
+  const fetchTools = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await apiGetTools();
+      setTools(response ?? []);
+      setLoading(false);
+    } catch (e) {
+      const errorMessage =
+        e instanceof Error ? e : new Error("Failed to fetch tools");
+      setError(errorMessage);
+      setLoading(false);
+    }
   }, []);
 
-  return { tools, loading };
+  useEffect(() => {
+    fetchTools();
+  }, [fetchTools]);
+
+  return { tools, loading, error };
 };

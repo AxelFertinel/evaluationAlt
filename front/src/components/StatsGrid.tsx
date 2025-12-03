@@ -15,7 +15,7 @@ export const StatsGrid = ({
   costPerUser,
 }: StatsGridProps) => {
   return (
-    <div className="mb-5 grid grid-cols-1 md:grid-cols-4 gap-6">
+    <div className="mb-5 grid grid-cols-1 md:grid-cols-4 gap-4">
       <StatCard
         title="Monthly Budget"
         value={`€${totalMonthlyCost}`}
