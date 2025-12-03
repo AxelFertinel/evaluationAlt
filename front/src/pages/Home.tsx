@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import { StatsGrid } from "@/components/StatsGrid";
 import { ErreurApi } from "@/components/ErreurApi";
 
-import ToolsTable from "./tools/ToolsTable";
+import ToolsTable from "../components/ToolsTable";
 import { useTools } from "@/hooks/useTools";
 import { useToolsStats } from "@/hooks/useToolsStats";
 

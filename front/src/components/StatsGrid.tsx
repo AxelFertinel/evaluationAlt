@@ -1,5 +1,5 @@
 import { TrendingUp, Wrench, Newspaper, Users } from "lucide-react";
-import { StatCard } from "@/components/statCard";
+import { StatCard } from "@/components/StatCard";
 
 interface StatsGridProps {
   totalMonthlyCost: number;
