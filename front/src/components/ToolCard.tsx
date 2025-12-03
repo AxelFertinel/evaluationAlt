@@ -57,7 +57,15 @@ const ToolCard = ({ tools }: ToolCardProps) => {
                 </span>
               </div>
             </div>
-
+            {/* User count */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between text-sm">
+                <span>User</span>
+                <span className="font-medium text-gray-900">
+                  {tool.active_users_count}
+                </span>
+              </div>
+            </div>
             {/* Infos */}
             {tool.icon_url && (
               <div className="space-y-2">
