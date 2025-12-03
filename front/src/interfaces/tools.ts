@@ -1,6 +1,7 @@
 export type Tool = {
   id: string;
   name: string;
+  description?: string;
   category: string;
   monthly_cost: number;
   owner_department: string;

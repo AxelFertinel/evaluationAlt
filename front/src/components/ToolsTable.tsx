@@ -1,4 +1,3 @@
-import Badge from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -8,6 +7,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import type { Tool } from "@/interfaces/tools";
+import { Badge } from "./ui/badge";
 
 interface ToolsTableProps {
   tools: Tool[] | null;
@@ -36,13 +36,10 @@ const ToolsTable = ({ tools }: ToolsTableProps) => {
                   {tool.owner_department ?? tool.category ?? "-"}
                 </TableCell>
                 <TableCell>{tool.active_users_count ?? "-"}</TableCell>
+                <TableCell>€{tool.monthly_cost}</TableCell>
                 <TableCell>
-                  {new Intl.NumberFormat(undefined, {
-                    style: "currency",
-                    currency: "EUR",
-                  }).format(tool.monthly_cost)}
+                  <Badge status={tool.status} />
                 </TableCell>
-                <TableCell>{Badge(tool.status)}</TableCell>
               </TableRow>
             ))
           ) : (
