@@ -7,7 +7,7 @@ import { useTools } from "@/hooks/useTools";
 import { useToolsStats } from "@/hooks/useToolsStats";
 
 import type { FilterItem } from "@/interfaces/filter";
-import { useSorting } from "@/hooks/useStorting";
+import { useSorting } from "@/hooks/useSorting";
 import { FilterGroup } from "@/components/FilterGroup";
 import type { Tool } from "@/interfaces/tools";
 
