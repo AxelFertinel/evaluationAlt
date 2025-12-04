@@ -1,6 +1,6 @@
 // hooks/useTools.ts
 import { useEffect, useState, useCallback } from "react";
-import { getTools as apiGetTools } from "@/api/tools";
+import { getTools } from "@/api/tools";
 import type { Tool } from "@/interfaces/tools";
 
 interface UseToolsReturn {
@@ -18,7 +18,7 @@ export const useTools = (): UseToolsReturn => {
     try {
       setLoading(true);
       setError(null);
-      const response = await apiGetTools();
+      const response = await getTools();
       setTools(response ?? []);
       setLoading(false);
     } catch (e) {
