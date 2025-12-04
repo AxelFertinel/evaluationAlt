@@ -20,3 +20,16 @@ Utilisation de la librairy https://react-chartjs-2.js.org/ pour les graphs analy
 ### Données
 
 https://tt-jsonserver-01.alt-tools.tech/
+
+### Dossier du projet
+
+src/
+├── api/ # Request API
+├── components/ # Design system réutilisé
+├── hooks/ # Data fetching logic
+├── interfaces/ # Typage TypeScript
+├── layout/ # Navbar et autre composant
+├── pages/ # Dashboard, Tools, Analytics
+├── utils/ # Helpers, constants
+├── services/ # logique metier de calcul
+└── README.md # Documentation complète
