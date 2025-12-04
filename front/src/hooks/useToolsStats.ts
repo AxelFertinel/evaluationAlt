@@ -2,7 +2,6 @@ import type { Tool } from "@/interfaces/tools";
 import { StatsCalculator } from "@/services/StatsCalculator";
 import { useMemo } from "react";
 
-
 export const useToolsStats = (tools: Tool[]) => {
   return useMemo(() => {
     const totalMonthlyCost = StatsCalculator.calculateTotalMonthlyCost(tools);

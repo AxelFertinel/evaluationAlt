@@ -2,7 +2,10 @@ import type { Tool } from "@/interfaces/tools";
 
 export class StatsCalculator {
   static calculateTotalMonthlyCost(tools: Tool[]): number {
-    return tools.reduce((sum, tool) => sum + (tool.monthly_cost || 0), 0);
+    return tools.reduce((sum, tool) => {
+      const cost = Number(tool.monthly_cost) || 0;
+      return sum + cost;
+    }, 0);
   }
 
   static calculateActiveToolsCount(tools: Tool[]): number {
@@ -14,7 +17,10 @@ export class StatsCalculator {
   }
 
   static calculateTotalUsers(tools: Tool[]): number {
-    return tools.reduce((sum, tool) => sum + (tool.active_users_count || 0), 0);
+    return tools.reduce((sum, tool) => {
+      const users = Number(tool.active_users_count) || 0;
+      return sum + users;
+    }, 0);
   }
 
   static calculateCostPerUser(totalCost: number, totalUsers: number): string {
